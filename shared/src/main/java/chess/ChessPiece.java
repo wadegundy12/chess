@@ -84,27 +84,28 @@ public class ChessPiece {
         //up-right
         for(int i = myPosition.getRow(), j = myPosition.getColumn(); i <= 8 && j <= 8; i++, j++){
             if(board.getPiece(new ChessPosition(i,j)) == null){
-                moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
+                moves.add(new ChessMove(myPosition,new ChessPosition(i,j), null));
             }
         }
+
         //down-right
         for(int i = myPosition.getRow(), j = myPosition.getColumn(); i > 0 && j <= 8; i--, j++){
             if(board.getPiece(new ChessPosition(i,j)) == null){
-                moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
+                moves.add(new ChessMove(myPosition,new ChessPosition(i,j), null));
             }
         }
 
         //up-left
         for(int i = myPosition.getRow(), j = myPosition.getColumn(); i <= 8 && j > 0 ; i++, j--){
             if(board.getPiece(new ChessPosition(i,j)) == null){
-                moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
+                moves.add(new ChessMove(myPosition,new ChessPosition(i,j), null));
             }
         }
 
         //down-left
         for(int i = myPosition.getRow(), j = myPosition.getColumn(); i > 0 && j > 0; i--, j--){
             if(board.getPiece(new ChessPosition(i,j)) == null){
-                moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
+                moves.add(new ChessMove(myPosition,new ChessPosition(i,j), null));
             }
         }
 
