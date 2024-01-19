@@ -73,7 +73,7 @@ public class ChessPiece {
                 System.out.println("Saturday");
                 break;
             default:
-                System.out.println("Invalid day of the week");
+                System.out.println("How the heck did you get here");
         }
         return null;
     }
@@ -85,6 +85,24 @@ public class ChessPiece {
                 moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
             }
         }
+
+        for(int i = myPosition.getRow() - 1, j = myPosition.getColumn() - 1; i >= 0 && j < 8; i--, j++){
+            if(board.getPiece(new ChessPosition(i,j)) == null){
+                moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
+            }
+        }
+
+        for(int i = myPosition.getRow() - 1, j = myPosition.getColumn() - 1; i < 8 && j >= 0 ; i++, j--){
+            if(board.getPiece(new ChessPosition(i,j)) == null){
+                moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
+            }
+        }
+        for(int i = myPosition.getRow() - 1, j = myPosition.getColumn() - 1; i >= 0 && j >= 0; i--, j--){
+            if(board.getPiece(new ChessPosition(i,j)) == null){
+                moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
+            }
+        }
+
         return moves;
     }
 }
