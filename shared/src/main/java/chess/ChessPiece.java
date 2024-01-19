@@ -80,24 +80,29 @@ public class ChessPiece {
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new ArrayList<>();
+
+        //up-right
         for(int i = myPosition.getRow(), j = myPosition.getColumn(); i <= 8 && j <= 8; i++, j++){
             if(board.getPiece(new ChessPosition(i,j)) == null){
                 moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
             }
         }
-
-        for(int i = myPosition.getRow() - 1, j = myPosition.getColumn() - 1; i >= 0 && j < 8; i--, j++){
+        //down-right
+        for(int i = myPosition.getRow(), j = myPosition.getColumn(); i > 0 && j <= 8; i--, j++){
             if(board.getPiece(new ChessPosition(i,j)) == null){
                 moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
             }
         }
 
-        for(int i = myPosition.getRow() - 1, j = myPosition.getColumn() - 1; i < 8 && j >= 0 ; i++, j--){
+        //up-left
+        for(int i = myPosition.getRow(), j = myPosition.getColumn(); i <= 8 && j > 0 ; i++, j--){
             if(board.getPiece(new ChessPosition(i,j)) == null){
                 moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
             }
         }
-        for(int i = myPosition.getRow() - 1, j = myPosition.getColumn() - 1; i >= 0 && j >= 0; i--, j--){
+
+        //down-left
+        for(int i = myPosition.getRow(), j = myPosition.getColumn(); i > 0 && j > 0; i--, j--){
             if(board.getPiece(new ChessPosition(i,j)) == null){
                 moves.add(new ChessMove(myPosition,new ChessPosition(i,j), type));
             }
