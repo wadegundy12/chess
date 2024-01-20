@@ -183,4 +183,38 @@ public class ChessPiece {
 
         return moves;
     }
+
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+        ChessPosition newPosition;
+        int myRow = myPosition.getRow();
+        int myCol = myPosition.getColumn();
+
+
+        boolean u8 = (myPosition.getRow() < 8);
+        boolean u7 = (myPosition.getRow() < 7);
+        boolean o1 = (myPosition.getRow() > 1);
+        boolean o2 = (myPosition.getRow() > 2);
+        boolean l8 = (myPosition.getColumn() < 8);
+        boolean l7 = (myPosition.getColumn() < 7);
+        boolean r1 = (myPosition.getColumn() > 1);
+        boolean r2 = (myPosition.getColumn() > 2);
+
+
+        if(u8){
+              if(l7){
+                  newPosition = new ChessPosition(myRow + 1, myCol + 2);
+                  if (board.getPiece(newPosition) == null) {
+                      moves.add(new ChessMove(myPosition, newPosition, null));
+                  } else if (board.getPiece(newPosition).pieceColor != board.getPiece(myPosition).pieceColor){
+                      moves.add(new ChessMove(myPosition, newPosition, null));
+
+                  }
+              }
+
+        }
+
+        return moves;
+    }
+
 }
