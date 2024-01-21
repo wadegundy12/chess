@@ -106,7 +106,12 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
-        return Arrays.equals(squares, that.squares);
+        for (int i = 0; i < squares.length; i++) {
+            if (!Arrays.equals(squares[i], that.squares[i])){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
