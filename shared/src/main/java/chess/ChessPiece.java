@@ -58,7 +58,7 @@ public class ChessPiece {
             case KING:
                 return kingMoves(board, myPosition);
             case QUEEN:
-                break;
+                return queenMoves(board,myPosition);
             case BISHOP:
                 return bishopMoves(board,myPosition);
             case KNIGHT:
@@ -368,6 +368,13 @@ public class ChessPiece {
         }
 
 
+        return moves;
+    }
+
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+        moves.addAll(rookMoves(board,myPosition));
+        moves.addAll(bishopMoves(board,myPosition));
         return moves;
     }
 
