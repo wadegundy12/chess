@@ -72,7 +72,7 @@ public class ChessPiece {
                 }
                 return blackPawnMoves(board,myPosition);
             default:
-                System.out.println("How the heck did you get here");
+
         }
         return null;
     }
