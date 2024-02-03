@@ -75,8 +75,9 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition kingPosition;
+        ChessPosition kingPosition = null;
         Collection<ChessMove> moves = new ArrayList<>();
+        boolean inCheck = false;
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 ChessPosition newPosition = new ChessPosition(i,j);
@@ -92,7 +93,20 @@ public class ChessGame {
             }
         }
 
+        if(kingPosition == null){
+            return false;
+        }
 
+        if (!moves.isEmpty()) {
+            for (ChessMove tempMove : moves){
+                if (tempMove.getEndPosition() == kingPosition){
+                    inCheck = true;
+                    break;
+                }
+            }
+        }
+
+        return inCheck;
 
     }
 
