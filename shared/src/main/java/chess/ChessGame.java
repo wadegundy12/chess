@@ -54,7 +54,7 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) throws CloneNotSupportedException {
+    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         if (board.getPiece(startPosition) == null){
             return null;
         }
@@ -63,7 +63,12 @@ public class ChessGame {
         if (!moves.isEmpty()){
             Iterator<ChessMove> iterator = moves.iterator();
             while(iterator.hasNext()){
-                ChessGame tempGame = this.clone();
+                ChessGame tempGame = null;
+                try {
+                    tempGame = this.clone();
+                } catch (CloneNotSupportedException e) {
+                    throw new RuntimeException(e);
+                }
                 ChessMove tempMove = iterator.next();
                 tempGame.getBoard().movePiece(tempMove);
                 if(isInCheck(tempGame.getBoard().getPiece(startPosition).getTeamColor())){
@@ -83,7 +88,13 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> possibleMoves = validMoves(move.getStartPosition());
+        if (possibleMoves.contains(move)){
+            board.movePiece(move);
+        }
+        else{
+            throw new InvalidMoveException();
+        }
     }
 
     /**
