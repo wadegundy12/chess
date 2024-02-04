@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -53,9 +54,26 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        //return board.getPiece(startPosition).pieceMoves(board,startPosition);
-        return null;
+    public Collection<ChessMove> validMoves(ChessPosition startPosition) throws CloneNotSupportedException {
+        if (board.getPiece(startPosition) == null){
+            return null;
+        }
+        ChessBoard tempBoard = board.clone();
+        Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board,startPosition);
+        if (!moves.isEmpty()){
+            Iterator<ChessMove> iterator = moves.iterator();
+            while(iterator.hasNext()){
+                ChessMove tempMove = iterator.next();
+                board.movePiece(tempMove);
+                if(isInCheck(board.getPiece(startPosition).getTeamColor())){
+                    iterator.remove();
+                }
+                board = tempBoard.clone();
+            }
+        }
+
+        return moves;
+
     }
 
     /**

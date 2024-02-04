@@ -101,6 +101,11 @@ public class ChessBoard {
 
     }
 
+    public void movePiece(ChessMove move){
+        addPiece(move.getEndPosition(),getPiece(move.getStartPosition()));
+        addPiece(move.getStartPosition(), null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -124,5 +129,12 @@ public class ChessBoard {
         return "ChessBoard{" +
                 "squares=" + Arrays.toString(squares) +
                 '}';
+    }
+
+    @Override
+    public ChessBoard clone() throws CloneNotSupportedException{
+        ChessBoard chessBoard2 = (ChessBoard) super.clone();
+        chessBoard2.squares = squares.clone();
+        return chessBoard2;
     }
 }
