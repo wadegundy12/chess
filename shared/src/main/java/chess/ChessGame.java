@@ -58,17 +58,17 @@ public class ChessGame {
         if (board.getPiece(startPosition) == null){
             return null;
         }
-        ChessBoard tempBoard = board.clone();
+
         Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board,startPosition);
         if (!moves.isEmpty()){
             Iterator<ChessMove> iterator = moves.iterator();
             while(iterator.hasNext()){
+                ChessGame tempGame = this.clone();
                 ChessMove tempMove = iterator.next();
-                board.movePiece(tempMove);
-                if(isInCheck(board.getPiece(startPosition).getTeamColor())){
+                tempGame.getBoard().movePiece(tempMove);
+                if(isInCheck(tempGame.getBoard().getPiece(startPosition).getTeamColor())){
                     iterator.remove();
                 }
-                board = tempBoard.clone();
             }
         }
 
@@ -155,7 +155,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -164,6 +164,13 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return board;
+    }
+
+    @Override
+    public ChessGame clone() throws CloneNotSupportedException{
+        ChessGame chessGame2 = (ChessGame) super.clone();
+        chessGame2.board = getBoard().clone();
+        return chessGame2;
     }
 }
