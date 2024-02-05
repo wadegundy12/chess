@@ -156,13 +156,13 @@ public class ChessPiece {
         Collection<ChessMove> moves = new ArrayList<>();
         int rowLowerLim = 1, colLowerLim = 1, rowUpperLim = 3, colUpperLim = 3;
 
-        if(myPosition.getRow() == 0){
+        if(myPosition.getRow() == 1){
             rowLowerLim = 0;
         }
         if(myPosition.getRow() == 8){
             rowUpperLim = 2;
         }
-        if(myPosition.getColumn() == 0){
+        if(myPosition.getColumn() == 1){
             colLowerLim = 0;
         }
         if(myPosition.getColumn() == 8){

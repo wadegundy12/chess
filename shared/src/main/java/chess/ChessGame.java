@@ -10,7 +10,7 @@ import java.util.Iterator;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessGame {
+public class ChessGame implements Cloneable{
 
     private TeamColor turn;
     private ChessBoard board;
@@ -70,8 +70,9 @@ public class ChessGame {
                     throw new RuntimeException(e);
                 }
                 ChessMove tempMove = iterator.next();
+                ChessGame.TeamColor tempColor = board.getPiece(startPosition).getTeamColor();
                 tempGame.getBoard().movePiece(tempMove);
-                if(isInCheck(tempGame.getBoard().getPiece(startPosition).getTeamColor())){
+                if(tempGame.isInCheck(tempColor)){
                     iterator.remove();
                 }
             }
@@ -107,8 +108,8 @@ public class ChessGame {
         ChessPosition kingPosition = null;
         Collection<ChessMove> moves = new ArrayList<>();
         boolean inCheck = false;
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
+        for (int i = 1; i < 9; i++){
+            for (int j = 1; j < 9; j++){
                 ChessPosition newPosition = new ChessPosition(i,j);
                 if (board.getPiece(newPosition) != null) {
                     ChessPiece tempPiece = new ChessPiece(board.getPiece(newPosition));
@@ -181,7 +182,7 @@ public class ChessGame {
     @Override
     public ChessGame clone() throws CloneNotSupportedException{
         ChessGame chessGame2 = (ChessGame) super.clone();
-        chessGame2.board = getBoard().clone();
+        chessGame2.board = this.getBoard().clone();
         return chessGame2;
     }
 }
