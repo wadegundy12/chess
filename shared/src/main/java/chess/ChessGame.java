@@ -93,15 +93,19 @@ public class ChessGame implements Cloneable{
         Collection<ChessMove> possibleMoves = validMoves(move.getStartPosition());
         if (pieceColor == turn && possibleMoves.contains(move)){
             board.movePiece(move);
-            if(turn == TeamColor.WHITE){
-                turn = TeamColor.BLACK;
-            }
-            else{
-                turn = TeamColor.WHITE;
+            if (move.getPromotionPiece() != null){
+                board.addPiece(move.getEndPosition(),new ChessPiece(turn,move.getPromotionPiece()));
             }
         }
         else{
             throw new InvalidMoveException();
+        }
+
+        if(turn == TeamColor.WHITE){
+            turn = TeamColor.BLACK;
+        }
+        else{
+            turn = TeamColor.WHITE;
         }
     }
 
