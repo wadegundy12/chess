@@ -15,10 +15,23 @@ public class ChessGame implements Cloneable{
     private TeamColor turn;
     private ChessBoard board;
 
+    private boolean bKingMoved;
+    private boolean wKingMoved;
+    private boolean wLeftRMoved;
+    private boolean bLeftRMoved;
+    private boolean wRightRMoved;
+    private boolean bRightRMoved;
+
+
+
+
+
     public ChessGame() {
         turn =TeamColor.WHITE;
         board = new ChessBoard();
         board.resetBoard();
+        setKingsAndRooks();
+
 
 
     }
@@ -76,6 +89,13 @@ public class ChessGame implements Cloneable{
                     iterator.remove();
                 }
             }
+        }
+
+        if(board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING && turn == TeamColor.WHITE && !wKingMoved && !isInCheck(turn)){
+            moves.addAll(checkWhiteCastling(startPosition));
+        }
+        else if(board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.KING && !bKingMoved && !isInCheck(turn)){
+            moves.addAll(checkBlackCastling(startPosition));
         }
 
         return moves;
@@ -184,13 +204,46 @@ public class ChessGame implements Cloneable{
         return moves.isEmpty();
     }
 
-    /**
-     * Sets this game's chessboard with a given board
-     *
-     * @param board the new board to use
-     */
+    public Collection<ChessMove> checkWhiteCastling(ChessPosition startPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+        ChessGame tempGame;
+        try {
+            tempGame = this.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+        if (!wLeftRMoved){
+            if (board.getPiece(new ChessPosition(1,4)) == null && board.getPiece(new ChessPosition(1,3)) == null) {
+
+            }
+        }
+
+    }
+
+
+    public Collection<ChessMove> checkBlackCastling(ChessPosition startPosition) {
+
+    }
+
+        /**
+         * Sets this game's chessboard with a given board
+         *
+         * @param board the new board to use
+         */
     public void setBoard(ChessBoard board) {
         this.board = board;
+    }
+
+    private void setKingsAndRooks(){
+        wLeftRMoved = false;
+        bLeftRMoved = false;
+        wRightRMoved = false;
+        bRightRMoved = false;
+        wKingMoved = false;
+        bKingMoved = false;
+
+
+
     }
 
     /**
