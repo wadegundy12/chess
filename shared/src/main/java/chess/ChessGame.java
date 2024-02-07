@@ -63,7 +63,7 @@ public class ChessGame implements Cloneable{
         if (!moves.isEmpty()){
             Iterator<ChessMove> iterator = moves.iterator();
             while(iterator.hasNext()){
-                ChessGame tempGame = null;
+                ChessGame tempGame;
                 try {
                     tempGame = this.clone();
                 } catch (CloneNotSupportedException e) {
@@ -158,7 +158,9 @@ public class ChessGame implements Cloneable{
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)){return false;}
+        return isInStalemate(teamColor);
+
     }
 
     /**
@@ -169,7 +171,17 @@ public class ChessGame implements Cloneable{
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> moves = new ArrayList<>();
+
+        for (int i = 1; i < 9; i++){
+            for (int j = 1; j < 9; j++){
+                ChessPosition tempPosition = new ChessPosition(i,j);
+                if(board.getPiece(tempPosition) != null && board.getPiece(tempPosition).getTeamColor() == teamColor){
+                    moves.addAll(validMoves(tempPosition));
+                }
+            }
+        }
+        return moves.isEmpty();
     }
 
     /**
