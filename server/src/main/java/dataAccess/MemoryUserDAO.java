@@ -1,11 +1,13 @@
 package dataAccess;
-import java.util.HashMap;
-import java.util.Map;
+import model.UserData;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 
 public class MemoryUserDAO implements UserDao{
 
-    private static Map<String, String> users = new HashMap<>();
+    private static Collection<UserData> users = new HashSet<>();
 
 
     @Override
@@ -14,15 +16,18 @@ public class MemoryUserDAO implements UserDao{
     }
 
     @Override
-    public void createUser(String username, String password) {
-        users.put(username, password);
+    public void createUser(String username, String password, String email) {
+        users.add(new UserData(username,password,email));
     }
 
     @Override
-    public User getUser(String username) {
-        if(users.containsKey(username)){
-            return new User(username, users.get(username));
+    public UserData getUser(String username) {
+        for (UserData nextUser : users) {
+            if (nextUser.username().equals(username)) {
+                return nextUser;
+            }
         }
         return null;
+
     }
 }

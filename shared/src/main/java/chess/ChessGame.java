@@ -24,9 +24,6 @@ public class ChessGame implements Cloneable{
         turn =TeamColor.WHITE;
         board = new ChessBoard();
         board.resetBoard();
-
-
-
     }
 
     /**
