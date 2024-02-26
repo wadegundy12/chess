@@ -8,7 +8,7 @@ import java.util.*;
 
 public class MemoryGameDAO implements GameDAO{
 
-    private static Map<Integer, GameData> games = new Hashtable<>();
+    private static Map<Integer, GameData> games = new HashMap<>();
 
     @Override
     public void createGame(String gameName) {
