@@ -1,36 +1,50 @@
 package dataAccess;
 
 import chess.ChessGame;
+import model.GameData;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 
 public class MemoryGameDAO implements GameDAO{
 
-    private static Map<String, ChessGame> games = new HashMap<>();
+    private static Map<Integer, GameData> games = new Hashtable<>();
 
     @Override
-    public boolean createGame(String gameName) {
-        if (games.containsKey(gameName)){
-            return false;
+    public void createGame(String gameName) {
+        for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
+            if (entry.getValue().gameName().equals(gameName)) {
+                return;
+            }
         }
-        games.put(gameName, new ChessGame());
-        return true;
+
+
+
+        int gameID = Integer.parseInt(UUID.randomUUID().toString().substring(0, 6), 16);
+
+
+        games.put(gameID, new GameData(gameID, "", "", gameName, new ChessGame()));
     }
 
     @Override
     public ChessGame getGame(int gameID) {
-        return null;
+        return games.get(gameID).game();
     }
 
     @Override
     public Collection<ChessGame> listGames() {
-        return null;
+        Collection<ChessGame> chessGames = new ArrayList<>();
+        for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
+            chessGames.add(entry.getValue().game());
+        }
+        return chessGames;
     }
 
     @Override
-    public void updateGame(int gameID) {
-
+    public void updateGame(int gameID, GameData newData) throws DataAccessException {
+        if (games.get(gameID) == null){
+            throw new DataAccessException("message");
+        }
+        games.put(gameID, newData);
     }
 }
