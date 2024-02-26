@@ -8,23 +8,25 @@ public class MemoryAuthDAO implements AuthDAO{
 
     private static Map<String, AuthData> auths = new HashMap<>();
     @Override
-    public void createAuth(String username) {
+    public String createAuth(String username) {
         String authToken = UUID.randomUUID().toString().substring(0, 6);
 
-        auths.put(authToken, new AuthData(authToken, username));
+        auths.put(username, new AuthData(authToken, username));
+
+        return authToken;
     }
 
     @Override
-    public String getAuth(String authToken) throws DataAccessException {
-        if (auths.get(authToken) == null){
+    public AuthData getAuth(String username) throws DataAccessException {
+        if (auths.get(username) == null){
             throw new DataAccessException("Auth does not exist");
         }
 
-        return auths.get(authToken).username();
+        return auths.get(username);
     }
 
     @Override
-    public void deleteAuth(String authToken) {
-        auths.remove(authToken);
+    public void deleteAuth(String username) {
+        auths.remove(username);
     }
 }
