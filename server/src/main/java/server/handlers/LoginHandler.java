@@ -1,7 +1,6 @@
 package server.handlers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
@@ -9,7 +8,7 @@ import service.UserService;
 
 public class LoginHandler {
 
-    public String login (JsonObject jsonObject){
+    public String login (String jsonObject){
         AuthData authData;
         UserService userService = new UserService();
 

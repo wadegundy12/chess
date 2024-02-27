@@ -2,7 +2,6 @@ package server.handlers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import service.UserService;
@@ -18,8 +17,6 @@ public class RegisterHandler {
 
         authData = userService.register(userData);
         return serializer.toJson(authData);
-
-
 
     }
 }
