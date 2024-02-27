@@ -7,22 +7,17 @@ import model.AuthData;
 import model.UserData;
 import service.UserService;
 
-public class LoginHandler {
+public class RegisterHandler {
 
-    public String login (JsonObject jsonObject){
+    public String register (JsonObject jsonObject){
         AuthData authData;
         UserService userService = new UserService();
 
         Gson serializer = new Gson();
         UserData userData = serializer.fromJson(jsonObject, UserData.class);
 
-        try {
-            authData = userService.login(userData);
-            return serializer.toJson(authData);
-        } catch (DataAccessException e) {
-            ErrorData error = new ErrorData(e.toString());
-            return serializer.toJson(error);
-        }
+        authData = userService.register(userData);
+        return serializer.toJson(authData);
 
 
 
