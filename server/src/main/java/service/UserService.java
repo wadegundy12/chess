@@ -20,7 +20,7 @@ public class UserService {
     }
 
     public AuthData login(UserData user) throws DataAccessException {
-        return aData.getAuth(user.username());
+        return new AuthData(aData.createAuth(user.username()), user.username());
     }
 
     public void logout (UserData user){

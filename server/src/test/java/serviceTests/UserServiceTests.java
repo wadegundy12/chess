@@ -1,16 +1,13 @@
 package serviceTests;
 
+
 import dataAccess.DataAccessException;
-import dataAccess.MemoryUserDAO;
-import dataAccess.UserDao;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import service.GameService;
 import service.UserService;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,9 +51,6 @@ public class UserServiceTests {
 
         UserData tempUser = new UserData("Wade", "GUNDY", "wdg23@gmail");
         testUsers.add(tempUser);
-
-
-
         userService.register(tempUser);
         userService.logout(tempUser);
         Assertions.assertEquals(testUsers, userService.getUserList());
@@ -65,20 +59,23 @@ public class UserServiceTests {
 
 
     @Test
-    public void testLogin(){
+    public void testLogin() throws DataAccessException {
         UserService userService = new UserService();
         Collection<UserData> testUsers = new HashSet<>();
         Map<String, AuthData> testAuths = new HashMap<>();
-
         UserData tempUser = new UserData("Wade", "GUNDY", "wdg23@gmail");
+
         testUsers.add(tempUser);
-
-
-
         userService.register(tempUser);
+        userService.logout(tempUser);
+        userService.login(tempUser);
         Assertions.assertEquals(testUsers, userService.getUserList());
-        //tests size of authList due to the randomness of the authTokens
+
+        //checks size of auth list due to randomness of authToken
         Assertions.assertEquals(1, userService.getAuthList().size());
+
+
+
 
 
     }
