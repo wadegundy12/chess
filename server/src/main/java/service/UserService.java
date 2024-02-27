@@ -4,6 +4,10 @@ import dataAccess.*;
 import model.AuthData;
 import model.UserData;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 public class UserService {
 
     private AuthDAO aData = new MemoryAuthDAO();
@@ -21,5 +25,18 @@ public class UserService {
 
     public void logout (UserData user){
         aData.deleteAuth(user.username());
+    }
+
+    public void clear() {
+        uData.clear();
+        aData.clear();
+    }
+
+    public Collection<UserData> getUserList(){
+        return uData.getUserList();
+    }
+
+    public Map<String, AuthData> getAuthList(){
+        return aData.getAuthList();
     }
 }

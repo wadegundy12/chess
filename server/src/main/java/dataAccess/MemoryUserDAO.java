@@ -30,4 +30,11 @@ public class MemoryUserDAO implements UserDao{
         return null;
 
     }
+
+    @Override
+    public Collection<UserData> getUserList() {
+        return users;
+    }
+
+
 }

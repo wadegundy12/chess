@@ -33,4 +33,11 @@ public class MemoryAuthDAO implements AuthDAO{
     public void clear(){
         auths.clear();
     }
+
+    @Override
+    public Map<String, AuthData> getAuthList() {
+        return auths;
+    }
+
+
 }
