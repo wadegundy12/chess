@@ -44,7 +44,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void testLogout(){
+    public void testLogout() throws DataAccessException {
         UserService userService = new UserService();
         Collection<UserData> testUsers = new HashSet<>();
         Map<String, AuthData> testAuths = new HashMap<>();

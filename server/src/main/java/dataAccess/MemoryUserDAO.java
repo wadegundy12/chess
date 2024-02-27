@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 
+
 public class MemoryUserDAO implements UserDao{
 
     private static Collection<UserData> users = new HashSet<>();
@@ -29,6 +30,15 @@ public class MemoryUserDAO implements UserDao{
         }
         return null;
 
+    }
+
+    public String getPassword(String username){
+        for (UserData nextUser : users) {
+            if (nextUser.username().equals(username)) {
+                return nextUser.password();
+            }
+        }
+        return null;
     }
 
     @Override

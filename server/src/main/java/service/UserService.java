@@ -20,10 +20,21 @@ public class UserService {
     }
 
     public AuthData login(UserData user) throws DataAccessException {
+
+        if(uData.getUser(user.username()) == null){
+            throw new DataAccessException("Error: unauthorized");
+        }
+
+        else if(!(uData.getPassword(user.username()).equals(user.password()))){
+            throw new DataAccessException("Error: unauthorized");
+        }
+
+
+
         return new AuthData(aData.createAuth(user.username()), user.username());
     }
 
-    public void logout (UserData user){
+    public void logout (UserData user) throws DataAccessException {
         aData.deleteAuth(user.username());
     }
 
