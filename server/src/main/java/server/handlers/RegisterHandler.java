@@ -5,18 +5,27 @@ import com.google.gson.JsonObject;
 import model.AuthData;
 import model.UserData;
 import service.UserService;
+import spark.Request;
+import spark.Response;
 
 public class RegisterHandler {
 
-    public String register (JsonObject jsonObject){
+    public JsonObject register (Request request , Response response){
         AuthData authData;
         UserService userService = new UserService();
-
         Gson serializer = new Gson();
-        UserData userData = serializer.fromJson(jsonObject, UserData.class);
+
+        UserData userData = serializer.fromJson(request.body(), UserData.class);
 
         authData = userService.register(userData);
-        return serializer.toJson(authData);
+        response.type("application/json");
+        response.body(serializer.toJson(authData));
+        JsonObject jsonResponse = new JsonObject();
+
+        String jsonString = serializer.toJson(authData);
+        jsonResponse = serializer.fromJson(jsonString, JsonObject.class);
+
+        return jsonResponse;
 
     }
 }
