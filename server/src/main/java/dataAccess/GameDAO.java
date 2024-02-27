@@ -7,8 +7,9 @@ import model.GameData;
 import java.util.Collection;
 
 public interface GameDAO {
-    void createGame(String gameName);
-    ChessGame getGame(int gameID);
+    int createGame(String gameName) throws DataAccessException;
+    GameData getGame(int gameID);
     Collection<ChessGame> listGames();
     void updateGame(int gameID, GameData newData) throws DataAccessException;
+    void clear();
 }

@@ -11,10 +11,10 @@ public class MemoryGameDAO implements GameDAO{
     private static Map<Integer, GameData> games = new HashMap<>();
 
     @Override
-    public void createGame(String gameName) {
+    public int createGame(String gameName) throws DataAccessException {
         for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
-            if (entry.getValue().gameName().equals(gameName)) {
-                return;
+            if (entry.getValue().getGameName().equals(gameName)) {
+                throw new DataAccessException("Game already exists");
             }
         }
 
@@ -23,19 +23,21 @@ public class MemoryGameDAO implements GameDAO{
         int gameID = Integer.parseInt(UUID.randomUUID().toString().substring(0, 6), 16);
 
 
-        games.put(gameID, new GameData(gameID, "", "", gameName, new ChessGame()));
+        games.put(gameID, new GameData(gameID, null, null, gameName, new ChessGame()));
+
+        return gameID;
     }
 
     @Override
-    public ChessGame getGame(int gameID) {
-        return games.get(gameID).game();
+    public GameData getGame(int gameID) {
+        return games.get(gameID);
     }
 
     @Override
     public Collection<ChessGame> listGames() {
         Collection<ChessGame> chessGames = new ArrayList<>();
         for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
-            chessGames.add(entry.getValue().game());
+            chessGames.add(entry.getValue().getGame());
         }
         return chessGames;
     }
@@ -46,5 +48,9 @@ public class MemoryGameDAO implements GameDAO{
             throw new DataAccessException("message");
         }
         games.put(gameID, newData);
+    }
+
+    public void clear(){
+        games.clear();
     }
 }
