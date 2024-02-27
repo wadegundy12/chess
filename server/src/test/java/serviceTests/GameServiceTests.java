@@ -10,6 +10,10 @@ import org.junit.jupiter.api.Test;
 import service.GameService;
 import service.UserService;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+
 
 public class GameServiceTests {
     @BeforeAll
@@ -20,14 +24,19 @@ public class GameServiceTests {
         tempUserService.clear();
     }
 
+
+    //NOTE: This also tests listGames();
     @Test
     public void createValidGame() throws DataAccessException{
         GameService newGameService = new GameService();
-        ChessGame tempGame = new ChessGame();
-        newGameService.createGame("wade's game");
-        newGameService.createGame("another game");
+        Collection<GameData> tempGames = new ArrayList<>();
+        int game1ID = newGameService.createGame("wade's game");
+        int game2ID = newGameService.createGame("another game");
+        tempGames.add(new GameData(game1ID, null, null, "wade's game", new ChessGame()));
+        tempGames.add(new GameData(game2ID, null, null, "another game", new ChessGame()));
 
         Assertions.assertEquals(2, newGameService.listGames().size());
+        Assertions.assertEquals(tempGames, newGameService.listGames());
     }
 
     // Checks if game is already made, throws exception
@@ -75,6 +84,14 @@ public class GameServiceTests {
 
         Assertions.assertEquals(new GameData(gameID, "Wade", "Nathan", "wade's game", tempGame), newGameService.getGameData(gameID));
     }
+
+    @Test
+    public void listZeroGames() throws DataAccessException{
+        GameService newGameService = new GameService();
+        Assertions.assertEquals(0, newGameService.listGames().size());
+
+    }
+
 
 
 

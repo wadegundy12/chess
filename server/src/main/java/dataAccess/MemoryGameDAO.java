@@ -34,10 +34,10 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public Collection<ChessGame> listGames() {
-        Collection<ChessGame> chessGames = new ArrayList<>();
+    public Collection<GameData> listGames() {
+        Collection<GameData> chessGames = new ArrayList<>();
         for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
-            chessGames.add(entry.getValue().getGame());
+            chessGames.add(entry.getValue());
         }
         return chessGames;
     }

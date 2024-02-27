@@ -14,7 +14,7 @@ public class GameService {
 
     private GameDAO gData = new MemoryGameDAO();
 
-    public Collection<ChessGame> listGames(){
+    public Collection<GameData> listGames(){
         return gData.listGames();
     }
 
