@@ -37,9 +37,15 @@ public class GameService {
 
     }
 
+    //for testing
+
     public void clear(){
         uData.clear();
         aData.clear();
         gData.clear();
+    }
+
+    public GameData getGameData(int gameID){
+        return gData.getGame(gameID);
     }
 }

@@ -74,10 +74,6 @@ public class UserServiceTests {
         //checks size of auth list due to randomness of authToken
         Assertions.assertEquals(1, userService.getAuthList().size());
 
-
-
-
-
     }
 
 

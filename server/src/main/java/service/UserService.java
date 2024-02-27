@@ -32,6 +32,8 @@ public class UserService {
         aData.clear();
     }
 
+    //Methods used for testing
+
     public Collection<UserData> getUserList(){
         return uData.getUserList();
     }
