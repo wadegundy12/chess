@@ -88,7 +88,11 @@ public class GameServiceTests {
     @Test
     public void listZeroGames() throws DataAccessException{
         GameService newGameService = new GameService();
+        Collection<GameData> tempGames = new ArrayList<>();
+
         Assertions.assertEquals(0, newGameService.listGames().size());
+        Assertions.assertEquals(tempGames, newGameService.listGames());
+
 
     }
 
