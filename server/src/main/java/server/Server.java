@@ -28,6 +28,9 @@ public class Server {
 
         get("/game", ((request, response) -> new GameHandler().listGames(request,response)));
 
+        put("/game", ((request, response) -> new GameHandler().joinGame(request,response)));
+
+
 
 
         Spark.awaitInitialization();

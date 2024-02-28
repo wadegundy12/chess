@@ -70,7 +70,7 @@ public class GameServiceTests {
 
 
 
-        newGameService.joinGame(ChessGame.TeamColor.WHITE, gameID, "Wade");
+        newGameService.joinGame("WHITE", gameID, "Wade");
         Assertions.assertEquals(new GameData(gameID, "Wade", null, "wade's game", tempGame), newGameService.getGameData(gameID));
     }
 
@@ -91,7 +91,7 @@ public class GameServiceTests {
 
 
         newGameService.joinGame(null, gameID, "Wade");
-        newGameService.joinGame(ChessGame.TeamColor.BLACK, gameID, "Nathan");
+        newGameService.joinGame("BLACK", gameID, "Nathan");
 
 
         Assertions.assertEquals(new GameData(gameID, "Wade", "Nathan", "wade's game", tempGame), newGameService.getGameData(gameID));

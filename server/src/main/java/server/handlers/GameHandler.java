@@ -3,9 +3,12 @@ package server.handlers;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
+import model.AuthData;
 import model.GameData;
 import service.GameService;
+import service.UserService;
 import spark.Request;
 import spark.Response;
 
@@ -54,8 +57,6 @@ public class GameHandler {
         GameService gameService = new GameService();
 
         Gson serializer = new Gson();
-        GameName gameNameRecord = serializer.fromJson(request.body(), GameName.class);
-
         try{
             String authToken = request.headers("authorization");
             Collection<GameData> gamesList =  gameService.listGames(authToken);
@@ -81,5 +82,37 @@ public class GameHandler {
             response.status(401);
             return jsonObject;
         }
+    }
+
+    public JsonObject joinGame (Request request, Response response){
+        GameService gameService = new GameService();
+        UserService userService = new UserService();
+        Gson serializer = new Gson();
+        try{
+            String authToken = request.headers("authorization");
+            JoinGameRequest gameRequest = serializer.fromJson(request.body(), JoinGameRequest.class);
+
+            gameService.joinGame(gameRequest.teamColor(), gameRequest.gameID(), authToken);
+
+            JsonObject jsonResponse = new JsonObject();
+
+
+            // Set response type and body
+            response.type("application/json");
+            response.body(jsonResponse.toString());
+
+            // Return the JSON response
+            return jsonResponse;
+
+
+
+        }catch (DataAccessException e){
+            ErrorData errorData = new ErrorData(e.getMessage());
+            String jsonString = serializer.toJson(errorData);
+            JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
+            response.status(401);
+            return jsonObject;
+        }
+
     }
 }

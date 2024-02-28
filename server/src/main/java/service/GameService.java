@@ -49,16 +49,33 @@ public class GameService {
             return gData.createGame(gameName);
     }
 
-    public void joinGame(ChessGame.TeamColor teamColor, int gameID, String username) throws DataAccessException {
-        GameData tempData = gData.getGame(gameID);
-        AuthData authToken = aData.getAuth(username);
+    public void joinGame(String teamColor, int gameID, String authToken) throws DataAccessException {
+        String username = "";
+        boolean found = false;
+        for (Map.Entry<String, AuthData> entry : aData.getAuthList().entrySet()) {
+            AuthData tempData = entry.getValue();
+            if(tempData.authToken().equals(authToken)){
+                found = true;
+                username = tempData.username();
+                break;
+            }
+        }
 
-        if (teamColor == ChessGame.TeamColor.BLACK){
-            tempData.setBlackUsername(authToken.username());
+        if(!found){
+            throw new DataAccessException("Error: unauthorized");
         }
-        else{
-            tempData.setWhiteUsername(authToken.username());
+
+        GameData tempData = gData.getGame(gameID);
+
+        if (teamColor == null) {return;}
+
+        if (teamColor.equals("BLACK")){
+            tempData.setBlackUsername(username);
         }
+        else  if (teamColor.equals("WHITE")){
+            tempData.setBlackUsername(username);
+        }
+
 
         gData.updateGame(gameID, tempData);
 
