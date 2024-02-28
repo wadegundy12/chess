@@ -1,18 +1,15 @@
 package server.handlers;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import model.AuthData;
 import model.GameData;
+import server.handlers.records.*;
 import service.GameService;
 import service.UserService;
 import spark.Request;
 import spark.Response;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class GameHandler {
@@ -45,9 +42,9 @@ public class GameHandler {
 
         } catch (DataAccessException e) {
             ErrorData errorData = new ErrorData(e.getMessage());
-            String jsonString = serializer.toJson(errorData);
+              String jsonString = serializer.toJson(errorData);
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
-            response.status(401);
+            response.status(410);
             return jsonObject;
         }
     }
@@ -79,7 +76,7 @@ public class GameHandler {
             ErrorData errorData = new ErrorData(e.getMessage());
             String jsonString = serializer.toJson(errorData);
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
-            response.status(401);
+            response.status(411);
             return jsonObject;
         }
     }
@@ -110,7 +107,7 @@ public class GameHandler {
             ErrorData errorData = new ErrorData(e.getMessage());
             String jsonString = serializer.toJson(errorData);
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
-            response.status(401);
+            response.status(412);
             return jsonObject;
         }
 

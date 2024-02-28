@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
+import server.handlers.records.ErrorData;
 import service.UserService;
 import spark.Request;
 import spark.Response;
@@ -32,7 +33,6 @@ public class LoginOutHandler {
             return jsonResponse;
         } catch (DataAccessException e) {
             ErrorData errorData = new ErrorData(e.getMessage());
-            response.status(401);
             String jsonString = serializer.toJson(errorData);
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
             response.status(401);
@@ -61,7 +61,6 @@ public class LoginOutHandler {
             return new JsonObject();
         } catch (DataAccessException e) {
             ErrorData errorData = new ErrorData(e.getMessage());
-            response.status(401);
             String jsonString = serializer.toJson(errorData);
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
             response.status(401);
