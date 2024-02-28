@@ -50,7 +50,7 @@ public class GameHandler {
     }
 
 
-    public JsonObject listGames (Request request, Response response){
+    public Object listGames (Request request, Response response){
         GameService gameService = new GameService();
 
         Gson serializer = new Gson();
@@ -60,12 +60,11 @@ public class GameHandler {
 
             GamesListRecord gamesListObject = new GamesListRecord(gamesList);
 
-            JsonObject jsonResponse = new JsonObject();
-            jsonResponse.addProperty("games:", gamesListObject.games().toString());
+            String jsonResponse = serializer.toJson(gamesListObject);
 
             // Set response type and body
             response.type("application/json");
-            response.body(jsonResponse.toString());
+            response.body(jsonResponse);
 
             // Return the JSON response
             return jsonResponse;
@@ -81,7 +80,7 @@ public class GameHandler {
         }
     }
 
-    public JsonObject joinGame (Request request, Response response){
+    public Object joinGame (Request request, Response response){
         GameService gameService = new GameService();
         UserService userService = new UserService();
         Gson serializer = new Gson();
@@ -89,7 +88,7 @@ public class GameHandler {
             String authToken = request.headers("authorization");
             JoinGameRequest gameRequest = serializer.fromJson(request.body(), JoinGameRequest.class);
 
-            gameService.joinGame(gameRequest.teamColor(), gameRequest.gameID(), authToken);
+            gameService.joinGame(gameRequest.playerColor(), gameRequest.gameID(), authToken);
 
             JsonObject jsonResponse = new JsonObject();
 

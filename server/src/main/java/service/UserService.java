@@ -37,19 +37,11 @@ public class UserService {
     public void logout (String authToken) throws DataAccessException {
         String username = "";
         boolean found = false;
-        for (Map.Entry<String, AuthData> entry : aData.getAuthList().entrySet()) {
-            AuthData tempData = entry.getValue();
-            if(tempData.authToken().equals(authToken)){
-                found = true;
-                username = tempData.username();
-                break;
-            }
-        }
-        if(!found){
+        if (!aData.getAuthList().containsKey(authToken)) {
             throw new DataAccessException("Error: unauthorized");
         }
 
-        aData.deleteAuth(username);
+        aData.deleteAuth(authToken);
     }
 
     public void clear() {

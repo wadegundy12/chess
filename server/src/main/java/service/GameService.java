@@ -17,32 +17,14 @@ public class GameService {
     private GameDAO gData = new MemoryGameDAO();
 
     public Collection<GameData> listGames(String authToken) throws DataAccessException {
-        boolean found = false;
-        for (Map.Entry<String, AuthData> entry : aData.getAuthList().entrySet()) {
-            AuthData tempData = entry.getValue();
-            if(tempData.authToken().equals(authToken)){
-                found = true;
-                break;
-            }
-        }
-
-        if(!found){
+        if(!aData.getAuthList().containsKey(authToken)){
             throw new DataAccessException("Error: unauthorized");
         }
         return gData.listGames();
     }
 
     public int createGame(String gameName, String authToken) throws DataAccessException {
-        boolean found = false;
-        for (Map.Entry<String, AuthData> entry : aData.getAuthList().entrySet()) {
-            AuthData tempData = entry.getValue();
-            if(tempData.authToken().equals(authToken)){
-                found = true;
-                break;
-            }
-        }
-
-        if(!found){
+        if(!aData.getAuthList().containsKey(authToken)){
             throw new DataAccessException("Error: unauthorized");
         }
 
@@ -50,42 +32,32 @@ public class GameService {
     }
 
     public void joinGame(String teamColor, int gameID, String authToken) throws DataAccessException {
-        String username = "";
-        boolean found = false;
-        for (Map.Entry<String, AuthData> entry : aData.getAuthList().entrySet()) {
-            AuthData tempData = entry.getValue();
-            if(tempData.authToken().equals(authToken)){
-                found = true;
-                username = tempData.username();
-                break;
-            }
-        }
 
-        if(!found){
+        if(!aData.getAuthList().containsKey(authToken)){
             throw new DataAccessException("Error: unauthorized");
         }
+
+        String username = aData.getAuthList().get(authToken).username();
 
         GameData tempData = gData.getGame(gameID);
 
 
         if (teamColor != null) {
-            if (teamColor.equals("BLACK")){
+            if (teamColor.equalsIgnoreCase("BLACK")){
+                if(tempData.getBlackUsername() != null){
+                    throw new DataAccessException("Error: already taken");
+                }
                 tempData.setBlackUsername(username);
             }
-            else  if (teamColor.equals("WHITE")){
-                tempData.setBlackUsername(username);
+            else  if (teamColor.equalsIgnoreCase("WHITE")){
+                if(tempData.getWhiteUsername() != null){
+                    throw new DataAccessException("Error: already taken");
+                }
+                tempData.setWhiteUsername(username);
             }
         }
 
-        else{
-            tempData.setWhiteUsername(gData.getGame(gameID).getWhiteUsername());
-            tempData.setBlackUsername(gData.getGame(gameID).getBlackUsername());
-            try {
-                tempData.setGame(gData.getGame(gameID).getGame().clone());
-            }catch(CloneNotSupportedException e){
-                throw new RuntimeException(e);
-            }
-        }
+
 
         gData.updateGame(gameID, tempData);
 

@@ -1,4 +1,4 @@
 package server.handlers.records;
 
-public record JoinGameRequest(String teamColor, int gameID) {
+public record JoinGameRequest(String playerColor, int gameID) {
 }

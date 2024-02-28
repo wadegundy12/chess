@@ -11,27 +11,28 @@ public class MemoryAuthDAO implements AuthDAO{
     public String createAuth(String username) {
         String authToken = UUID.randomUUID().toString().substring(0, 6);
 
-        auths.put(username, new AuthData(authToken, username));
+        auths.put(authToken, new AuthData(authToken, username));
 
         return authToken;
     }
 
     @Override
-    public AuthData getAuth(String username) throws DataAccessException {
-        if (auths.get(username) == null){
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        if (auths.get(authToken) == null){
             throw new DataAccessException("Auth does not exist");
         }
 
-        return auths.get(username);
+        return auths.get(authToken);
     }
 
     @Override
-    public void deleteAuth(String username) throws DataAccessException {
-        if(!auths.containsKey(username)){
+    public void deleteAuth(String authtoken) throws DataAccessException {
+        if(!auths.containsKey(authtoken)){
             throw new DataAccessException("Error: unauthorized");
         }
-        auths.remove(username);
+        auths.remove(authtoken);
     }
+
 
     public void clear(){
         auths.clear();

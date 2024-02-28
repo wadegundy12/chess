@@ -6,6 +6,7 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.UserService;
 import java.util.Collection;
@@ -15,8 +16,8 @@ import java.util.Map;
 
 public class UserServiceTests {
 
-    @BeforeAll
-    public static void clearDAOs(){
+    @BeforeEach
+    public void clearDAOs(){
         UserService tempUserService = new UserService();
         tempUserService.clear();
     }

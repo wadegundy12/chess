@@ -7,6 +7,7 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.GameService;
 import service.UserService;
@@ -17,8 +18,8 @@ import java.util.Collection;
 
 
 public class GameServiceTests {
-    @BeforeAll
-    public static void clearDAOs(){
+    @BeforeEach
+    public void clearDAOs(){
         GameService tempGameService = new GameService();
         tempGameService.clear();
         UserService tempUserService = new UserService();
@@ -70,7 +71,7 @@ public class GameServiceTests {
 
 
 
-        newGameService.joinGame("WHITE", gameID, "Wade");
+        newGameService.joinGame("WHITE", gameID, authData1.authToken());
         Assertions.assertEquals(new GameData(gameID, "Wade", null, "wade's game", tempGame), newGameService.getGameData(gameID));
     }
 
@@ -90,8 +91,8 @@ public class GameServiceTests {
 
 
 
-        newGameService.joinGame(null, gameID, "Wade");
-        newGameService.joinGame("BLACK", gameID, "Nathan");
+        newGameService.joinGame("WHITE", gameID, authData1.authToken());
+        newGameService.joinGame("BLACK", gameID, authData2.authToken());
 
 
         Assertions.assertEquals(new GameData(gameID, "Wade", "Nathan", "wade's game", tempGame), newGameService.getGameData(gameID));

@@ -12,8 +12,9 @@ import spark.Response;
 
 public class RegisterHandler {
 
-    public JsonObject register (Request request , Response response){
+    public Object register (Request request , Response response){
         AuthData authData;
+        String jsonString;
         UserService userService = new UserService();
         Gson serializer = new Gson();
 
@@ -26,11 +27,11 @@ public class RegisterHandler {
             response.body(serializer.toJson(authData));
 
 
-            String jsonString = serializer.toJson(authData);
+            jsonString = serializer.toJson(authData);
             jsonResponse = serializer.fromJson(jsonString, JsonObject.class);
         } catch (DataAccessException e) {
             ErrorData errorData = new ErrorData(e.getMessage());
-            String jsonString = serializer.toJson(errorData);
+            jsonString = serializer.toJson(errorData);
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
 
             if (e.getMessage().charAt(e.getMessage().length() -1) == 'n') {
@@ -42,7 +43,7 @@ public class RegisterHandler {
             return jsonObject;
         }
 
-        return jsonResponse;
+        return jsonString;
 
     }
 }
