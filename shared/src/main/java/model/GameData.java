@@ -80,4 +80,15 @@ public class GameData {
     public int hashCode() {
         return Objects.hash(gameID, whiteUsername, blackUsername, gameName, game);
     }
+
+    @Override
+    public String toString() {
+        return "GameData{" +
+                "gameID=" + gameID +
+                ", whiteUsername='" + whiteUsername + '\'' +
+                ", blackUsername='" + blackUsername + '\'' +
+                ", gameName='" + gameName + '\'' +
+                ", game=" + game +
+                '}';
+    }
 }

@@ -7,6 +7,7 @@ import model.GameData;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class GameService {
 
@@ -15,7 +16,19 @@ public class GameService {
 
     private GameDAO gData = new MemoryGameDAO();
 
-    public Collection<GameData> listGames(){
+    public Collection<GameData> listGames(String authToken) throws DataAccessException {
+        boolean found = false;
+        for (Map.Entry<String, AuthData> entry : aData.getAuthList().entrySet()) {
+            AuthData tempData = entry.getValue();
+            if(tempData.authToken().equals(authToken)){
+                found = true;
+                break;
+            }
+        }
+
+        if(!found){
+            throw new DataAccessException("Error: unauthorized");
+        }
         return gData.listGames();
     }
 

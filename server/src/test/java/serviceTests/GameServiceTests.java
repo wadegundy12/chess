@@ -38,7 +38,7 @@ public class GameServiceTests {
         int game2ID = newGameService.createGame("nathan's game", authData2.authToken());
 
 
-        Assertions.assertEquals(2, newGameService.listGames().size());
+        Assertions.assertEquals(2, newGameService.listGames(authData1.authToken()).size());
 
     }
 
@@ -99,11 +99,15 @@ public class GameServiceTests {
 
     @Test
     public void listZeroGames() throws DataAccessException{
+        UserService userService = new UserService();
+        AuthData authData1 = userService.register(new UserData("Wade", "", ""));
+
+
         GameService newGameService = new GameService();
         Collection<GameData> tempGames = new ArrayList<>();
 
-        Assertions.assertEquals(0, newGameService.listGames().size());
-        Assertions.assertEquals(tempGames, newGameService.listGames());
+        Assertions.assertEquals(0, newGameService.listGames(authData1.authToken()).size());
+        Assertions.assertEquals(tempGames, newGameService.listGames(authData1.authToken()));
 
 
     }
