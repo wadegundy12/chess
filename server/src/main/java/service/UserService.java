@@ -34,8 +34,11 @@ public class UserService {
         return new AuthData(aData.createAuth(user.username()), user.username());
     }
 
-    public void logout (UserData user) throws DataAccessException {
-        aData.deleteAuth(user.username());
+    public void logout (AuthData authData) throws DataAccessException {
+        if(!aData.getAuth(authData.username()).authToken().equals(authData.authToken())){
+            throw new DataAccessException("Error: unauthorized");
+        }
+        aData.deleteAuth(authData.username());
     }
 
     public void clear() {

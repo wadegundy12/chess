@@ -6,6 +6,7 @@ import model.AuthData;
 import model.GameData;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class GameService {
 
@@ -18,8 +19,21 @@ public class GameService {
         return gData.listGames();
     }
 
-    public int createGame(String gameName) throws DataAccessException {
-        return gData.createGame(gameName);
+    public int createGame(String gameName, String authToken) throws DataAccessException {
+        boolean found = false;
+        for (Map.Entry<String, AuthData> entry : aData.getAuthList().entrySet()) {
+            AuthData tempData = entry.getValue();
+            if(tempData.authToken().equals(authToken)){
+                found = true;
+                break;
+            }
+        }
+
+        if(!found){
+            throw new DataAccessException("Error: unauthorized");
+        }
+
+            return gData.createGame(gameName);
     }
 
     public void joinGame(ChessGame.TeamColor teamColor, int gameID, String username) throws DataAccessException {

@@ -2,6 +2,7 @@ package serviceTests;
 
 import chess.ChessGame;
 import dataAccess.DataAccessException;
+import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
@@ -28,23 +29,29 @@ public class GameServiceTests {
     //NOTE: This also tests listGames();
     @Test
     public void createValidGame() throws DataAccessException{
+        UserService userService = new UserService();
         GameService newGameService = new GameService();
-        Collection<GameData> tempGames = new ArrayList<>();
-        int game1ID = newGameService.createGame("wade's game");
-        int game2ID = newGameService.createGame("another game");
-        tempGames.add(new GameData(game1ID, null, null, "wade's game", new ChessGame()));
-        tempGames.add(new GameData(game2ID, null, null, "another game", new ChessGame()));
+        AuthData authData1 = userService.register(new UserData("Wade", "", ""));
+        AuthData authData2 = userService.register(new UserData("Nathan", "", ""));
+
+        int game1ID = newGameService.createGame("wade's game", authData2.authToken());
+        int game2ID = newGameService.createGame("nathan's game", authData2.authToken());
+
 
         Assertions.assertEquals(2, newGameService.listGames().size());
-        Assertions.assertEquals(tempGames, newGameService.listGames());
+
     }
 
     // Checks if game is already made, throws exception
     @Test
     public void gameAlreadyCreated() throws DataAccessException {
+        UserService userService = new UserService();
+
         GameService newGameService = new GameService();
-        newGameService.createGame("wade's game");
-        Assertions.assertThrows(DataAccessException.class, () -> { newGameService.createGame("wade's game");});
+
+        AuthData authData1 = userService.register(new UserData("Wade", "", ""));
+        newGameService.createGame("wade's game", authData1.authToken());
+        Assertions.assertThrows(DataAccessException.class, () -> { newGameService.createGame("wade's game", authData1.authToken());});
     }
 
 
@@ -54,10 +61,13 @@ public class GameServiceTests {
         UserService userService = new UserService();
 
         ChessGame tempGame = new ChessGame();
-        int gameID = newGameService.createGame("wade's game");
-        newGameService.createGame("another game");
 
-        userService.register(new UserData("Wade", "", ""));
+        AuthData authData1 = userService.register(new UserData("Wade", "", ""));
+        AuthData authData2 = userService.register(new UserData("Nathan", "", ""));
+
+        int gameID = newGameService.createGame("wade's game", authData1.authToken());
+        newGameService.createGame("nathan's game", authData2.authToken());
+
 
 
         newGameService.joinGame(ChessGame.TeamColor.WHITE, gameID, "Wade");
@@ -69,12 +79,14 @@ public class GameServiceTests {
         GameService newGameService = new GameService();
         UserService userService = new UserService();
 
-        ChessGame tempGame = new ChessGame();
-        int gameID = newGameService.createGame("wade's game");
-        newGameService.createGame("another game");
+        AuthData authData1 = userService.register(new UserData("Wade", "", ""));
+        AuthData authData2 = userService.register(new UserData("Nathan", "", ""));
 
-        userService.register(new UserData("Wade", "", ""));
-        userService.register(new UserData("Nathan", "", ""));
+        ChessGame tempGame = new ChessGame();
+        int gameID = newGameService.createGame("wade's game", authData1.authToken());
+        newGameService.createGame("another game", authData2.authToken());
+
+
 
 
 

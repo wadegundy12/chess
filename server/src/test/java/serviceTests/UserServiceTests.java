@@ -51,8 +51,8 @@ public class UserServiceTests {
 
         UserData tempUser = new UserData("Wade", "GUNDY", "wdg23@gmail");
         testUsers.add(tempUser);
-        userService.register(tempUser);
-        userService.logout(tempUser);
+        AuthData authData = userService.register(tempUser);
+        userService.logout(authData);
         Assertions.assertEquals(testUsers, userService.getUserList());
         Assertions.assertEquals(testAuths, userService.getAuthList());
     }
@@ -65,9 +65,10 @@ public class UserServiceTests {
         Map<String, AuthData> testAuths = new HashMap<>();
         UserData tempUser = new UserData("Wade", "GUNDY", "wdg23@gmail");
 
+
         testUsers.add(tempUser);
-        userService.register(tempUser);
-        userService.logout(tempUser);
+        AuthData authData = userService.register(tempUser);
+        userService.logout(authData);
         userService.login(tempUser);
         Assertions.assertEquals(testUsers, userService.getUserList());
 

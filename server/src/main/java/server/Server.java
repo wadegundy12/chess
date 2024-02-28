@@ -1,6 +1,7 @@
 package server;
 
 import server.handlers.ClearHandler;
+import server.handlers.GameHandler;
 import server.handlers.LoginOutHandler;
 import server.handlers.RegisterHandler;
 import spark.*;
@@ -23,7 +24,7 @@ public class Server {
 
         delete("/db", (((request, response) -> new ClearHandler().clear(response))));
 
-
+        post("/game", ((request, response) -> new GameHandler().createGame(request,response)));
 
 
 

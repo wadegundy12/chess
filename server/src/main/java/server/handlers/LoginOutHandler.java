@@ -42,6 +42,7 @@ public class LoginOutHandler {
 
     public JsonObject logout (Request request ,Response response) {
 
+        String authToken;
         AuthData authData;
         UserService userService = new UserService();
         Gson serializer = new Gson();
@@ -49,8 +50,11 @@ public class LoginOutHandler {
 
         try {
             UserData userData = serializer.fromJson(request.body(), UserData.class);
+            authToken = serializer.fromJson(request.headers("authorization"), String.class);
+            authData = new AuthData(authToken, userData.username());
 
-            userService.logout(userData);
+
+            userService.logout(authData);
             response.type("application/json");
 
 
