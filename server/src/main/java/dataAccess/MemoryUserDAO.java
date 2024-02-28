@@ -17,7 +17,14 @@ public class MemoryUserDAO implements UserDao{
     }
 
     @Override
-    public void createUser(UserData user) {
+    public void createUser(UserData user) throws DataAccessException {
+        if(users.contains(user)){
+            throw new DataAccessException("Error: already taken");
+        }
+        if(user.password() == null){
+            throw new DataAccessException("Error: bad request");
+
+        }
         users.add(user);
     }
 

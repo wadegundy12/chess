@@ -29,8 +29,13 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public GameData getGame(int gameID) {
-        return games.get(gameID);
+    public GameData getGame(int gameID) throws DataAccessException {
+        if(games.get(gameID) == null){
+            throw new DataAccessException("Error: bad request");
+        }
+        else{
+            return games.get(gameID);
+        }
     }
 
     @Override

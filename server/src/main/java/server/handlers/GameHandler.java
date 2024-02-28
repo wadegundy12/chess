@@ -31,7 +31,7 @@ public class GameHandler {
 
             // Serialize the GameIDRecord to JSON
             JsonObject jsonResponse = new JsonObject();
-            jsonResponse.addProperty("gameId", gameIDRecord.gameID());
+            jsonResponse.addProperty("gameID", gameIDRecord.gameID());
 
             // Set response type and body
             response.type("application/json");
@@ -42,9 +42,9 @@ public class GameHandler {
 
         } catch (DataAccessException e) {
             ErrorData errorData = new ErrorData(e.getMessage());
-              String jsonString = serializer.toJson(errorData);
+            String jsonString = serializer.toJson(errorData);
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
-            response.status(410);
+            response.status(401);
             return jsonObject;
         }
     }
@@ -76,7 +76,7 @@ public class GameHandler {
             ErrorData errorData = new ErrorData(e.getMessage());
             String jsonString = serializer.toJson(errorData);
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
-            response.status(411);
+            response.status(401);
             return jsonObject;
         }
     }
@@ -107,7 +107,16 @@ public class GameHandler {
             ErrorData errorData = new ErrorData(e.getMessage());
             String jsonString = serializer.toJson(errorData);
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
-            response.status(412);
+
+            if (e.getMessage().charAt(e.getMessage().length() -1) == 'n') {
+                response.status(403);
+            }
+            else if (e.getMessage().charAt(e.getMessage().length() -1) == 't') {
+                response.status(400);
+            }
+            else{
+                response.status(401);
+            }
             return jsonObject;
         }
 

@@ -67,15 +67,25 @@ public class GameService {
 
         GameData tempData = gData.getGame(gameID);
 
-        if (teamColor == null) {return;}
 
-        if (teamColor.equals("BLACK")){
-            tempData.setBlackUsername(username);
-        }
-        else  if (teamColor.equals("WHITE")){
-            tempData.setBlackUsername(username);
+        if (teamColor != null) {
+            if (teamColor.equals("BLACK")){
+                tempData.setBlackUsername(username);
+            }
+            else  if (teamColor.equals("WHITE")){
+                tempData.setBlackUsername(username);
+            }
         }
 
+        else{
+            tempData.setWhiteUsername(gData.getGame(gameID).getWhiteUsername());
+            tempData.setBlackUsername(gData.getGame(gameID).getBlackUsername());
+            try {
+                tempData.setGame(gData.getGame(gameID).getGame().clone());
+            }catch(CloneNotSupportedException e){
+                throw new RuntimeException(e);
+            }
+        }
 
         gData.updateGame(gameID, tempData);
 
@@ -89,7 +99,7 @@ public class GameService {
         gData.clear();
     }
 
-    public GameData getGameData(int gameID){
+    public GameData getGameData(int gameID) throws DataAccessException {
         return gData.getGame(gameID);
     }
 }

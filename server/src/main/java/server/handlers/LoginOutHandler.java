@@ -49,12 +49,9 @@ public class LoginOutHandler {
 
 
         try {
-            UserData userData = serializer.fromJson(request.body(), UserData.class);
+
             authToken = serializer.fromJson(request.headers("authorization"), String.class);
-            authData = new AuthData(authToken, userData.username());
-
-
-            userService.logout(authData);
+            userService.logout(authToken);
             response.type("application/json");
 
 

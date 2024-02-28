@@ -22,7 +22,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void createValidUsers() {
+    public void createValidUsers() throws DataAccessException {
         UserService userService = new UserService();
         Collection<UserData> testUsers = new HashSet<>();
 
@@ -52,7 +52,7 @@ public class UserServiceTests {
         UserData tempUser = new UserData("Wade", "GUNDY", "wdg23@gmail");
         testUsers.add(tempUser);
         AuthData authData = userService.register(tempUser);
-        userService.logout(authData);
+        userService.logout(authData.authToken());
         Assertions.assertEquals(testUsers, userService.getUserList());
         Assertions.assertEquals(testAuths, userService.getAuthList());
     }
@@ -68,7 +68,7 @@ public class UserServiceTests {
 
         testUsers.add(tempUser);
         AuthData authData = userService.register(tempUser);
-        userService.logout(authData);
+        userService.logout(authData.authToken());
         userService.login(tempUser);
         Assertions.assertEquals(testUsers, userService.getUserList());
 

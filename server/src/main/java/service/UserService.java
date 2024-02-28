@@ -13,7 +13,7 @@ public class UserService {
     private AuthDAO aData = new MemoryAuthDAO();
     private UserDao uData = new MemoryUserDAO();
 
-    public AuthData register(UserData user){
+    public AuthData register(UserData user) throws DataAccessException {
         uData.createUser(user);
         String authToken = aData.createAuth(user.username());
         return new AuthData(authToken, user.username());
@@ -34,11 +34,22 @@ public class UserService {
         return new AuthData(aData.createAuth(user.username()), user.username());
     }
 
-    public void logout (AuthData authData) throws DataAccessException {
-        if(!aData.getAuth(authData.username()).authToken().equals(authData.authToken())){
+    public void logout (String authToken) throws DataAccessException {
+        String username = "";
+        boolean found = false;
+        for (Map.Entry<String, AuthData> entry : aData.getAuthList().entrySet()) {
+            AuthData tempData = entry.getValue();
+            if(tempData.authToken().equals(authToken)){
+                found = true;
+                username = tempData.username();
+                break;
+            }
+        }
+        if(!found){
             throw new DataAccessException("Error: unauthorized");
         }
-        aData.deleteAuth(authData.username());
+
+        aData.deleteAuth(username);
     }
 
     public void clear() {
