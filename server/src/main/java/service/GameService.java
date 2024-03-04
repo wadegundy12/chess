@@ -1,13 +1,12 @@
 package service;
 
-import chess.ChessGame;
 import dataAccess.*;
-import model.AuthData;
+import dataAccess.memoryDAOs.MemoryAuthDAO;
+import dataAccess.memoryDAOs.MemoryGameDAO;
+import dataAccess.memoryDAOs.MemoryUserDAO;
 import model.GameData;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 public class GameService {
 

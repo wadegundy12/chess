@@ -1,11 +1,12 @@
 package service;
 
 import dataAccess.*;
+import dataAccess.memoryDAOs.MemoryAuthDAO;
+import dataAccess.memoryDAOs.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 public class UserService {

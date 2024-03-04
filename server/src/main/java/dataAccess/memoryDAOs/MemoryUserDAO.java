@@ -1,4 +1,6 @@
-package dataAccess;
+package dataAccess.memoryDAOs;
+import dataAccess.DataAccessException;
+import dataAccess.UserDao;
 import model.UserData;
 
 import java.util.Collection;
@@ -6,7 +8,7 @@ import java.util.HashSet;
 
 
 
-public class MemoryUserDAO implements UserDao{
+public class MemoryUserDAO implements UserDao {
 
     private static Collection<UserData> users = new HashSet<>();
 
