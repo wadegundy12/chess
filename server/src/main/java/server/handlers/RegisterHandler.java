@@ -26,13 +26,11 @@ public class RegisterHandler {
             response.type("application/json");
             response.body(serializer.toJson(authData));
 
-
             jsonString = serializer.toJson(authData);
-            jsonResponse = serializer.fromJson(jsonString, JsonObject.class);
         } catch (DataAccessException e) {
             ErrorData errorData = new ErrorData(e.getMessage());
             jsonString = serializer.toJson(errorData);
-            JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
+
 
             if (e.getMessage().charAt(e.getMessage().length() -1) == 'n') {
                 response.status(403);
@@ -40,7 +38,7 @@ public class RegisterHandler {
             else{
                 response.status(400);
             }
-            return jsonObject;
+            return jsonString;
         }
 
         return jsonString;

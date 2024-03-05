@@ -4,6 +4,9 @@ import dataAccess.*;
 import dataAccess.memoryDAOs.MemoryAuthDAO;
 import dataAccess.memoryDAOs.MemoryGameDAO;
 import dataAccess.memoryDAOs.MemoryUserDAO;
+import dataAccess.parentDAOs.AuthDAO;
+import dataAccess.parentDAOs.GameDAO;
+import dataAccess.parentDAOs.UserDao;
 import model.GameData;
 
 import java.util.Collection;

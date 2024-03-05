@@ -43,7 +43,6 @@ public class LoginOutHandler {
     public JsonObject logout (Request request ,Response response) {
 
         String authToken;
-        AuthData authData;
         UserService userService = new UserService();
         Gson serializer = new Gson();
 

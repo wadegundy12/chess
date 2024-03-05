@@ -1,6 +1,6 @@
 package dataAccess.memoryDAOs;
 import dataAccess.DataAccessException;
-import dataAccess.UserDao;
+import dataAccess.parentDAOs.UserDao;
 import model.UserData;
 
 import java.util.Collection;

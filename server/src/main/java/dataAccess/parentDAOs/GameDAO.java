@@ -1,5 +1,6 @@
-package dataAccess;
+package dataAccess.parentDAOs;
 
+import dataAccess.DataAccessException;
 import model.GameData;
 
 
