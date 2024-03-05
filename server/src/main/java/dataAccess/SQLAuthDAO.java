@@ -1,10 +1,7 @@
 package dataAccess;
 
-import dataAccess.parentDAOs.AuthDAO;
-import dataAccess.DataAccessException;
 import model.AuthData;
 import java.sql.*;
-import dataAccess.DatabaseManager;
 import java.util.Map;
 
 public class SQLAuthDAO implements AuthDAO {

@@ -1,12 +1,17 @@
 package dataAccess;
 
-import dataAccess.DataAccessException;
-import dataAccess.parentDAOs.UserDao;
 import model.UserData;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 public class SQLUserDAO implements UserDao {
+
+
+    public SQLUserDAO() throws DataAccessException {
+        configureDatabase();
+    }
+
     @Override
     public void clear() {
 
@@ -31,4 +36,19 @@ public class SQLUserDAO implements UserDao {
     public String getPassword(String username) {
         return null;
     }
+
+    public static void configureDatabase() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+        }
+    }
+
+
 }
