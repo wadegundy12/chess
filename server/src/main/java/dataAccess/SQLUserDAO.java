@@ -3,6 +3,7 @@ package dataAccess;
 import model.UserData;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class SQLUserDAO implements UserDao {
@@ -55,18 +56,51 @@ public class SQLUserDAO implements UserDao {
     }
 
     @Override
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username) {
+        try(Connection connection = DatabaseManager.getConnection()){
+            String sql = "SELECT * FROM users WHERE username = ?";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        String foundUsername = rs.getString("username");
+                        String password = rs.getString("password");
+                        String email = rs.getString("email");
+                        return new UserData(foundUsername, password, email);
+                    }
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 
     @Override
     public Collection<UserData> getUserList() {
-        return null;
+        try(Connection connection = DatabaseManager.getConnection()){
+            Collection<UserData> userList = new ArrayList<>();
+            String sql = "SELECT * FROM users";
+            try (PreparedStatement statement = connection.prepareStatement(sql);
+                 ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    String username = rs.getString("username");
+                    String password = rs.getString("password");
+                    String email = rs.getString("email");
+                    userList.add(new UserData(username, password, email));
+                }
+            }
+            return userList;
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public String getPassword(String username) {
-        return null;
+        UserData user = getUser(username);
+        if (user == null){return null;}
+        return user.password();
     }
 
     public void configureDatabase() throws DataAccessException {
