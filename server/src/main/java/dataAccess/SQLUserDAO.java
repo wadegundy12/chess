@@ -14,7 +14,6 @@ public class SQLUserDAO implements UserDao {
               username VARCHAR(50) PRIMARY KEY,
               password VARCHAR(255) NOT NULL,
               email VARCHAR(100) NOT NULL
-              INDEX(authtoken)
             )
             """
     };
@@ -70,8 +69,10 @@ public class SQLUserDAO implements UserDao {
                     }
                 }
             }
-        } catch (SQLException | DataAccessException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (DataAccessException e){
+            return null;
         }
         return null;
     }
