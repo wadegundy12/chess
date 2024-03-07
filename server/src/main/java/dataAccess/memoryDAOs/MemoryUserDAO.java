@@ -41,13 +41,13 @@ public class MemoryUserDAO implements UserDao {
 
     }
 
-    public String getPassword(String username){
+    public boolean checkPassword(String username, String passwordToCheck){
         for (UserData nextUser : users) {
-            if (nextUser.username().equals(username)) {
-                return nextUser.password();
+            if (nextUser.password().equals(passwordToCheck)) {
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     @Override

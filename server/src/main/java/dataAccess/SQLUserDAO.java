@@ -1,6 +1,7 @@
 package dataAccess;
 
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,8 +20,12 @@ public class SQLUserDAO implements UserDao {
     };
 
 
-    public SQLUserDAO() throws DataAccessException {
-        configureDatabase();
+    public SQLUserDAO(){
+        try {
+            configureDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -37,14 +42,20 @@ public class SQLUserDAO implements UserDao {
 
     @Override
     public void createUser(UserData user) throws DataAccessException {
-        try(Connection connection = DatabaseManager.getConnection()) {
+        try(Connection connection = DatabaseManager.getConnection();
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM users")) {
+
             if (isUsernameTaken(connection, user.username())){
                 throw new DataAccessException("Error: already taken");
             }
+
+
+
             String sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, user.username());
-                statement.setString(2, user.password());
+                statement.setString(2, encodePassword(user.password()));
                 statement.setString(3, user.email());
                 statement.executeUpdate();
             }
@@ -98,10 +109,10 @@ public class SQLUserDAO implements UserDao {
     }
 
     @Override
-    public String getPassword(String username) {
+    public boolean checkPassword(String username, String passwordToCheck){
         UserData user = getUser(username);
-        if (user == null){return null;}
-        return user.password();
+        if (user == null){return false;}
+        return passwordMatcher(user.password(),passwordToCheck);
     }
 
     public void configureDatabase() throws DataAccessException {
@@ -125,6 +136,17 @@ public class SQLUserDAO implements UserDao {
                 return rs.next();
             }
         }
+    }
+
+    private String encodePassword(String password){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.encode(password);
+    }
+
+    private boolean passwordMatcher(String password, String codedPassword){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        return encoder.matches(password, codedPassword);
     }
 
 

@@ -12,14 +12,19 @@ public class SQLAuthDAO implements AuthDAO {
             """
             CREATE TABLE IF NOT EXISTS  auths (
               authToken VARCHAR(255) PRIMARY KEY,
-              username VARCHAR(50) NOT NULL,
+              username VARCHAR(50) NOT NULL
             )
             """
     };
 
 
-    public SQLAuthDAO() throws DataAccessException, SQLException {
-        configureDatabase();
+    public SQLAuthDAO(){
+
+        try {
+            configureDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

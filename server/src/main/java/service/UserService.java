@@ -13,8 +13,8 @@ import java.util.Map;
 
 public class UserService {
 
-    private AuthDAO aData = new MemoryAuthDAO();
-    private UserDao uData = new MemoryUserDAO();
+    private AuthDAO aData = new SQLAuthDAO();
+    private UserDao uData = new SQLUserDAO();
 
     public AuthData register(UserData user) throws DataAccessException {
         uData.createUser(user);
@@ -28,7 +28,7 @@ public class UserService {
             throw new DataAccessException("Error: unauthorized");
         }
 
-        else if(!(uData.getPassword(user.username()).equals(user.password()))){
+        else if(!(uData.checkPassword(user.username(), user.password()))){
             throw new DataAccessException("Error: unauthorized");
         }
 

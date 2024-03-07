@@ -13,8 +13,8 @@ import java.util.Collection;
 
 public class GameService {
 
-    private AuthDAO aData = new MemoryAuthDAO();
-    private UserDao uData = new MemoryUserDAO();
+    private AuthDAO aData = new SQLAuthDAO();
+    private UserDao uData = new SQLUserDAO();
 
     private GameDAO gData = new MemoryGameDAO();
 

@@ -13,7 +13,7 @@ public interface UserDao {
     void createUser(UserData user) throws DataAccessException;
     UserData getUser(String username) throws DataAccessException;
     Collection<UserData> getUserList();
-    public String getPassword(String username);
+    public boolean checkPassword(String username, String passwordToCheck)
 
 
 
