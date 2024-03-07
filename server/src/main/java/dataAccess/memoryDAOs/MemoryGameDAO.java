@@ -20,11 +20,7 @@ public class MemoryGameDAO implements GameDAO {
             }
         }
 
-
-
         int gameID = Integer.parseInt(UUID.randomUUID().toString().substring(0, 6), 16);
-
-
         games.put(gameID, new GameData(gameID, null, null, gameName, new ChessGame()));
 
         return gameID;

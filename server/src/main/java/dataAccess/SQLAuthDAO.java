@@ -79,7 +79,7 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public void clear() {
         try(Connection connection = DatabaseManager.getConnection()){
-            String sql = "DELETE FROM users";
+            String sql = "DELETE FROM auths";
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(sql);
             }
