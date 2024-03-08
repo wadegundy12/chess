@@ -50,6 +50,10 @@ public class SQLUserDAO implements UserDao {
             if (isUsernameTaken(connection, user.username())){
                 throw new DataAccessException("Error: already taken");
             }
+            if(user.password() == null){
+                throw new DataAccessException("Error: bad request");
+
+            }
 
 
 
@@ -113,7 +117,7 @@ public class SQLUserDAO implements UserDao {
     public boolean checkPassword(String username, String passwordToCheck){
         UserData user = getUser(username);
         if (user == null){return false;}
-        return passwordMatcher(user.password(),passwordToCheck);
+        return passwordMatcher(passwordToCheck, user.password());
     }
 
     public void configureDatabase() throws DataAccessException {

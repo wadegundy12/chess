@@ -52,7 +52,7 @@ public class SQLAuthDAO implements AuthDAO {
                 try (ResultSet rs = statement.executeQuery()) {
                     if (rs.next()) {
                         String foundAuthToken = rs.getString("authToken");
-                        String username = rs.getString("password");
+                        String username = rs.getString("username");
                         return new AuthData(foundAuthToken, username);
                     }
                 }
@@ -60,16 +60,21 @@ public class SQLAuthDAO implements AuthDAO {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
+        throw new DataAccessException("Auth does not exist");
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
+        try{
+            getAuth(authToken);
+        }catch(DataAccessException e){
+            throw new DataAccessException("Error: unauthorized");
+        }
         try(Connection connection = DatabaseManager.getConnection()){
             String sql = "DELETE FROM auths WHERE authToken = ?";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, authToken);
-
+                statement.executeUpdate();
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
