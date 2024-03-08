@@ -120,7 +120,7 @@ public class SQLUserDAO implements UserDao {
         return passwordMatcher(passwordToCheck, user.password());
     }
 
-    public void configureDatabase() throws DataAccessException {
+    private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (String statement : createStatements) {
