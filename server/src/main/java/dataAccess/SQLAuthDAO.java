@@ -37,10 +37,10 @@ public class SQLAuthDAO implements AuthDAO {
                 statement.setString(2, username);
                 statement.executeUpdate();
             }
+            return authToken;
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override

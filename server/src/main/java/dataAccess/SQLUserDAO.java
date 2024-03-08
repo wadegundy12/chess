@@ -9,6 +9,7 @@ import java.util.Collection;
 
 public class SQLUserDAO implements UserDao {
 
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  users (
@@ -139,13 +140,10 @@ public class SQLUserDAO implements UserDao {
     }
 
     private String encodePassword(String password){
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(password);
     }
 
     private boolean passwordMatcher(String password, String codedPassword){
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
         return encoder.matches(password, codedPassword);
     }
 

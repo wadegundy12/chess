@@ -16,7 +16,7 @@ public class GameService {
     private AuthDAO aData = new SQLAuthDAO();
     private UserDao uData = new SQLUserDAO();
 
-    private GameDAO gData = new MemoryGameDAO();
+    private GameDAO gData = new SQLGameDAO();
 
     public Collection<GameData> listGames(String authToken) throws DataAccessException {
         if(!aData.getAuthList().containsKey(authToken)){
