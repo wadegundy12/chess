@@ -87,8 +87,8 @@ public class AuthDAOTests {
     @Test
     public void getAuthList() {
         SQLAuthDAO authDAO = new SQLAuthDAO();
-        String tempAuth1 = authDAO.createAuth("Wade");
-        String tempAuth2 = authDAO.createAuth("Test2");
+        authDAO.createAuth("Wade");
+        authDAO.createAuth("Test2");
         Assertions.assertEquals(2, authDAO.getAuthList().size());
     }
 

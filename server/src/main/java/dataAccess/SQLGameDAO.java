@@ -38,7 +38,6 @@ public class SQLGameDAO implements GameDAO {
 
             int gameID = Integer.parseInt(UUID.randomUUID().toString().substring(0, 6), 16);
             String gameString = gameToString(new GameData(gameID, null, null, gameName, new ChessGame()));
-            System.out.println(gameString);
 
             String sql = "INSERT INTO games (gameID, gameData) VALUES (?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
