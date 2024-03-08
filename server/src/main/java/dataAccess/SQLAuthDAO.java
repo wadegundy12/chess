@@ -29,6 +29,7 @@ public class SQLAuthDAO implements AuthDAO {
 
     @Override
     public String createAuth(String username) {
+        if(username == null){return null;}
         String authToken = UUID.randomUUID().toString().substring(0, 6);
         try(Connection connection = DatabaseManager.getConnection()) {
             String sql = "INSERT INTO auths (authToken, username) VALUES (?, ?)";
@@ -112,7 +113,7 @@ public class SQLAuthDAO implements AuthDAO {
         }
     }
 
-    public void configureDatabase() throws DataAccessException {
+    private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (String statement : createStatements) {
