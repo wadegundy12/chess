@@ -30,7 +30,15 @@ public class ChessClient {
     }
 
     private String loggedInHelp(){
-        return "";
+        return """
+                \tcreate <NAME> - \u001B[32ma game\u001B[0m
+                \tlist - \u001B[32mgames\u001B[0m
+                \tjoin <ID> [WHITE|BLACK|<empty>] - \u001B[32ma game\u001B[0m
+                \tobserve <ID> - \u001B[32ma game\u001B[0m
+                \tlogout - \u001B[32mwhen you are done\u001B[0m
+                \tquit - \u001B[32mplaying chess\u001B[0m
+                \thelp - \u001B[32mwith possible commands\u001B[0m
+                """;
     }
 
     private String loggedOutHelp(){
