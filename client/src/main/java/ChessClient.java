@@ -23,9 +23,23 @@ public class ChessClient {
         String cmd = (tokens.length > 0) ? tokens[0] : "help";
         String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch (cmd) {
+            case "help" -> (loggedIn) ? loggedInHelp() : loggedOutHelp();
             case "register" -> register(params);
             default -> " ";
         };
+    }
+
+    private String loggedInHelp(){
+        return "";
+    }
+
+    private String loggedOutHelp(){
+        return """
+                \tregister <USERNAME> <PASSWORD> <EMAIL> - \u001B[32mto create an account\u001B[0m
+                \tlogin <USERNAME> <PASSWORD> - \u001B[32mto play chess\u001B[0m
+                \tquit - \u001B[32mplaying chess\u001B[0m
+                \thelp - \u001B[32mwith possible commands\u001B[0m
+                """;
     }
 
     private String register(String[] params) {
@@ -55,6 +69,7 @@ public class ChessClient {
             if(responseCode == 200){
                 Scanner scanner = new Scanner(connection.getInputStream());
                 authToken = scanner.nextInt();
+                loggedIn = true;
                 return "Logged in as " + username;
             }
 
@@ -65,5 +80,9 @@ public class ChessClient {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean isLoggedIn(){
+        return loggedIn;
     }
 }
