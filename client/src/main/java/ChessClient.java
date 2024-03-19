@@ -1,29 +1,21 @@
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import model.UserData;
-import server.handlers.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class ChessClient {
 
-    private GameHandler gameHandler;
-    private LoginOutHandler loginHandler;
-    private RegisterHandler registerHandler;
     private boolean loggedIn;
+    private int authToken;
     Gson serializer = new Gson();
 
     public ChessClient() {
-        gameHandler = new GameHandler();
-        loginHandler = new LoginOutHandler();
-        registerHandler = new RegisterHandler();
         loggedIn = false;
+        authToken = 0;
     }
 
     public String eval(String input){
@@ -54,20 +46,22 @@ public class ChessClient {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoInput(true);
             connection.setDoOutput(true);
+
             OutputStream outputStream = connection.getOutputStream();
             outputStream.write(jsonUser.getBytes());
             outputStream.flush();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-            StringBuffer response = new StringBuffer();
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
+            int responseCode = connection.getResponseCode();
+            if(responseCode == 200){
+                Scanner scanner = new Scanner(connection.getInputStream());
+                authToken = scanner.nextInt();
+                return "Logged in as " + username;
             }
-            reader.close();
-            connection.disconnect();
-            return response.toString();
 
+            else if(responseCode == 403){
+                return "Username already taken";
+            }
+            return "Bad request";
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
