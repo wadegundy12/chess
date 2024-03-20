@@ -69,6 +69,9 @@ public class ChessClient {
     }
 
     private String login(String[] params){
+        if (loggedIn){
+            return "Already logged in";
+        }
         if(params.length < 2){
             return "Not enough information given";
         }
@@ -82,9 +85,21 @@ public class ChessClient {
         }
     }
 
+    private String logout(){
+        if (!loggedIn){
+            return "Already logged out";
+        }
+        try {
+            server.logout(authToken);
+            loggedIn = false;
+            return "Successfully logged out";
+        } catch (DataAccessException e) {
+            return e.getMessage();
+        }
 
-
-    public boolean isLoggedIn(){
-        return loggedIn;
     }
+
+
+
+
 }

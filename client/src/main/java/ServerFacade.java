@@ -21,15 +21,20 @@ public class ServerFacade {
 
     public AuthData register(UserData user) throws DataAccessException {
         String path = "/user";
-        return this.makeRequest("POST", path, user, AuthData.class);
+        return this.makeRequest("POST", path, user, AuthData.class, false, null);
     }
 
     public AuthData login(UserData user) throws DataAccessException {
         String path = "/session";
-        return this.makeRequest("POST", path, user, AuthData.class);
+        return this.makeRequest("POST", path, user, AuthData.class, false, null);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws DataAccessException {
+    public void logout(String authToken) throws DataAccessException{
+        String path = "/session";
+        this.makeRequest("DELETE", path, null, void.class, true, authToken);
+    }
+
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, boolean addAuthHeader, String authToken) throws DataAccessException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -37,6 +42,9 @@ public class ServerFacade {
             http.setDoOutput(true);
 
             writeBody(request, http);
+            if (addAuthHeader){
+                writeHeader(request,http,authToken);
+            }
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
@@ -52,6 +60,15 @@ public class ServerFacade {
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
+        }
+    }
+
+    private static void writeHeader(Object request, HttpURLConnection http, String header) {
+        if (request != null) {
+            http.setRequestProperty("Content-Type", "application/json");
+        }
+        if (header != null && !header.isEmpty()) {
+            http.setRequestProperty("authorization", header);
         }
     }
 
