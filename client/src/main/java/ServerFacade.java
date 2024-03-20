@@ -1,7 +1,7 @@
-package ui;
-
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
+import model.AuthData;
+import model.UserData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +17,16 @@ public class ServerFacade {
 
     public ServerFacade(String url) {
         this.serverUrl = url;
+    }
+
+    public AuthData register(UserData user) throws DataAccessException {
+        String path = "/user";
+        return this.makeRequest("POST", path, user, AuthData.class);
+    }
+
+    public AuthData login(UserData user) throws DataAccessException {
+        String path = "/session";
+        return this.makeRequest("POST", path, user, AuthData.class);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws DataAccessException {

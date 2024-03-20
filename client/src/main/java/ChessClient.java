@@ -1,4 +1,5 @@
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import model.UserData;
 
 import java.io.OutputStream;
@@ -10,12 +11,14 @@ import java.util.Scanner;
 public class ChessClient {
 
     private boolean loggedIn;
-    private int authToken;
+    private String authToken;
+    private ServerFacade server = new ServerFacade("http://localhost:8080");
     Gson serializer = new Gson();
 
     public ChessClient() {
         loggedIn = false;
-        authToken = 0;
+        authToken = "0";
+
     }
 
     public String eval(String input){
@@ -25,6 +28,7 @@ public class ChessClient {
         return switch (cmd) {
             case "help" -> (loggedIn) ? loggedInHelp() : loggedOutHelp();
             case "register" -> register(params);
+            case "login" -> login(params);
             default -> " ";
         };
     }
@@ -50,45 +54,35 @@ public class ChessClient {
                 """;
     }
 
-    private String register(String[] params) {
-        if (params.length < 3) {
-            return "Not enough information";
+    private String register(String[] params){
+        if(params.length < 3){
+            return "Not enough information given";
         }
+        UserData user = new UserData(params[0], params[1], params[2]);
         try {
-            URL url = new URL("http://localhost:8080/user");
-            String username = params[0];
-            String password = params[1];
-            String email = params[2];
-
-            UserData user = new UserData(username, password, email);
-            String jsonUser = serializer.toJson(user);
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-
-            OutputStream outputStream = connection.getOutputStream();
-            outputStream.write(jsonUser.getBytes());
-            outputStream.flush();
-
-            int responseCode = connection.getResponseCode();
-            if(responseCode == 200){
-                Scanner scanner = new Scanner(connection.getInputStream());
-                authToken = scanner.nextInt();
-                loggedIn = true;
-                return "Logged in as " + username;
-            }
-
-            else if(responseCode == 403){
-                return "Username already taken";
-            }
-            return "Bad request";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            authToken = server.register(user).authToken();
+            loggedIn = true;
+            return "Successfully registered and logged in";
+        } catch (DataAccessException e) {
+            return e.getMessage();
         }
     }
+
+    private String login(String[] params){
+        if(params.length < 2){
+            return "Not enough information given";
+        }
+        UserData user = new UserData(params[0],params[1],null);
+        try {
+            authToken = server.login(user).authToken();
+            loggedIn = true;
+            return "Successfully logged in";
+        } catch (DataAccessException e) {
+            return e.getMessage();
+        }
+    }
+
+
 
     public boolean isLoggedIn(){
         return loggedIn;
