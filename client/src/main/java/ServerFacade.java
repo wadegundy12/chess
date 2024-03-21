@@ -3,6 +3,7 @@ import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import server.handlers.records.GameName;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +44,11 @@ public class ServerFacade {
         Collection<GameData> gameCollection = this.makeRequest("GET", path, null, Collection.class, authToken);
         games = gameCollection.toArray(new GameData[10]);
         return games;
+    }
+
+    public void createGame(GameName gameName, String authToken) throws DataAccessException {
+        String path = "/game";
+        this.makeRequest("POST", path, gameName, String.class, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws DataAccessException {

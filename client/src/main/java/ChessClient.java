@@ -2,6 +2,7 @@ import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.GameData;
 import model.UserData;
+import server.handlers.records.GameName;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -34,12 +35,14 @@ public class ChessClient {
                 case "quit" -> "Goodbye";
                 case "login" -> login(params);
                 case "register" -> register(params);
+                case "join" -> join(params);
                 default -> " ";
             };
         }
         return switch (cmd){
             case "help" -> loggedInHelp();
             case "logout" -> logout();
+            case "create" -> createGame(params);
             case "list" -> listGames();
             default -> "";
         };
@@ -110,19 +113,32 @@ public class ChessClient {
         }
     }
 
+    private String createGame(String[] params){
+        if (!loggedIn){
+            return "Not logged in";
+        }
+        try {
+            server.createGame(new GameName(params[0]), authToken);
+            return "Game created";
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private String listGames(){
-        String output = "Games:\n";
+        StringBuilder output = new StringBuilder("Games:\n");
         if (!loggedIn){
             return "Not logged in";
         }
         try{
             gameArray = server.listGames(authToken);
             for (int i = 0; i < gameArray.length; i++){
-                output += "\tGame " + i + ": \u001B[32Name: " + gameArray[i].getGameName() + "\n\t\tWhite Username: ";
-                output += "\n\t\t\u001B[32White Username: " + gameArray[i].getWhiteUsername();
-                output += "\n\t\t\u001B[32Black Username: " + gameArray[i].getBlackUsername() + "\u001B[0m\n";
+                output.append("\tGame ").append(i);
+                output.append(": \u001B[32Name: ").append(gameArray[i].getGameName()).append("\n\t\tWhite Username: ");
+                output.append("\n\t\t\u001B[32White Username: ").append(gameArray[i].getWhiteUsername());
+                output.append("\n\t\t\u001B[32Black Username: ").append(gameArray[i].getBlackUsername()).append("\u001B[0m\n");
             }
-            return output;
+            return output.toString();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
