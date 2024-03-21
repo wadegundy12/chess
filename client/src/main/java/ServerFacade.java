@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
 import java.io.IOException;
@@ -10,10 +11,13 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ServerFacade {
 
     private final String serverUrl;
+    private GameData[] games;
 
     public ServerFacade(String url) {
         this.serverUrl = url;
@@ -21,20 +25,27 @@ public class ServerFacade {
 
     public AuthData register(UserData user) throws DataAccessException {
         String path = "/user";
-        return this.makeRequest("POST", path, user, AuthData.class, false, null);
+        return this.makeRequest("POST", path, user, AuthData.class, null);
     }
 
     public AuthData login(UserData user) throws DataAccessException {
         String path = "/session";
-        return this.makeRequest("POST", path, user, AuthData.class, false, null);
+        return this.makeRequest("POST", path, user, AuthData.class, null);
     }
 
     public void logout(String authToken) throws DataAccessException{
         String path = "/session";
-        this.makeRequest("DELETE", path, null, void.class, true, authToken);
+        this.makeRequest("DELETE", path, null, void.class, authToken);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, boolean addAuthHeader, String authToken) throws DataAccessException {
+    public GameData[] listGames(String authToken) throws DataAccessException{
+        String path = "/game";
+        Collection<GameData> gameCollection = this.makeRequest("GET", path, null, Collection.class, authToken);
+        games = gameCollection.toArray(new GameData[10]);
+        return games;
+    }
+
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws DataAccessException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -42,7 +53,7 @@ public class ServerFacade {
             http.setDoOutput(true);
 
             writeBody(request, http);
-            if (addAuthHeader){
+            if (authToken != null){
                 writeHeader(request,http,authToken);
             }
             http.connect();

@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
+import model.GameData;
 import model.UserData;
 
 import java.io.OutputStream;
@@ -13,11 +14,13 @@ public class ChessClient {
     private boolean loggedIn;
     private String authToken;
     private ServerFacade server = new ServerFacade("http://localhost:8080");
-    Gson serializer = new Gson();
+
+    private GameData[] gameArray;
 
     public ChessClient() {
         loggedIn = false;
         authToken = "0";
+        gameArray = null;
 
     }
 
@@ -25,11 +28,20 @@ public class ChessClient {
         String[] tokens = input.toLowerCase().split(" ");
         String cmd = (tokens.length > 0) ? tokens[0] : "help";
         String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
-        return switch (cmd) {
-            case "help" -> (loggedIn) ? loggedInHelp() : loggedOutHelp();
-            case "register" -> register(params);
-            case "login" -> login(params);
-            default -> " ";
+        if (!loggedIn) {
+            return switch (cmd) {
+                case "help" -> loggedOutHelp();
+                case "quit" -> "Goodbye";
+                case "login" -> login(params);
+                case "register" -> register(params);
+                default -> " ";
+            };
+        }
+        return switch (cmd){
+            case "help" -> loggedInHelp();
+            case "logout" -> logout();
+            case "list" -> listGames();
+            default -> "";
         };
     }
 
@@ -96,7 +108,24 @@ public class ChessClient {
         } catch (DataAccessException e) {
             return e.getMessage();
         }
+    }
 
+    private String listGames(){
+        String output = "Games:\n";
+        if (!loggedIn){
+            return "Not logged in";
+        }
+        try{
+            gameArray = server.listGames(authToken);
+            for (int i = 0; i < gameArray.length; i++){
+                output += "\tGame " + i + ": \u001B[32Name: " + gameArray[i].getGameName() + "\n\t\tWhite Username: ";
+                output += "\n\t\t\u001B[32White Username: " + gameArray[i].getWhiteUsername();
+                output += "\n\t\t\u001B[32Black Username: " + gameArray[i].getBlackUsername() + "\u001B[0m\n";
+            }
+            return output;
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
