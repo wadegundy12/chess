@@ -51,6 +51,11 @@ public class ServerFacade {
         this.makeRequest("POST", path, gameName, String.class, authToken);
     }
 
+    public void joinGame(int gameNum) throws DataAccessException {
+        String path = "/game";
+        this.makeRequest("PUT", path, gameNum, void.class,null);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws DataAccessException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();

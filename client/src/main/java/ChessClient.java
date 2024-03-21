@@ -1,14 +1,9 @@
-import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.GameData;
 import model.UserData;
 import server.handlers.records.GameName;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Arrays;
-import java.util.Scanner;
 
 public class ChessClient {
 
@@ -35,7 +30,7 @@ public class ChessClient {
                 case "quit" -> "Goodbye";
                 case "login" -> login(params);
                 case "register" -> register(params);
-                case "join" -> join(params);
+                case "join" -> joinGame(params);
                 default -> " ";
             };
         }
@@ -144,7 +139,18 @@ public class ChessClient {
         }
     }
 
-
-
+    private String joinGame(String[] params) throws DataAccessException {
+        int gameNum;
+        try{
+            gameNum = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            return "Did not input a valid number";
+        }
+        if (gameNum < 0 | gameNum >= gameArray.length){
+            return "Game number out of range";
+        }
+        server.joinGame(gameNum);
+        return "Game added";
+    }
 
 }
