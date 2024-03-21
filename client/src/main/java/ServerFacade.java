@@ -4,6 +4,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import server.handlers.records.GameName;
+import server.handlers.records.JoinGameRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,10 +52,12 @@ public class ServerFacade {
         this.makeRequest("POST", path, gameName, String.class, authToken);
     }
 
-    public void joinGame(int gameNum) throws DataAccessException {
+    public void joinGame(int gameNum, String teamColor) throws DataAccessException {
         String path = "/game";
-        this.makeRequest("PUT", path, gameNum, void.class,null);
+        this.makeRequest("PUT", path, new JoinGameRequest(teamColor, games[gameNum].getGameID()), void.class,null);
     }
+
+
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws DataAccessException {
         try {
@@ -99,7 +102,7 @@ public class ServerFacade {
         if (http.getContentLength() < 0) {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
-                if (responseClass != null) {
+                if (responseClass != null) { 
                     response = new Gson().fromJson(reader, responseClass);
                 }
             }

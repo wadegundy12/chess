@@ -33,7 +33,7 @@ public class LoginOutHandler {
             return jsonResponse;
         } catch (DataAccessException e) {
             ErrorData errorData = new ErrorData(e.getMessage());
-            String jsonString = serializer.toJson(errorData);
+            String jsonString = serializer.toJson(new AuthData(null,null, errorData.message()));
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
             response.status(401);
             return jsonObject;
@@ -48,16 +48,20 @@ public class LoginOutHandler {
 
 
         try {
+            JsonObject jsonResponse;
 
             authToken = serializer.fromJson(request.headers("authorization"), String.class);
             userService.logout(authToken);
             response.type("application/json");
+            response.body(serializer.toJson(""));
+            String jsonString = serializer.toJson("");
+            jsonResponse = serializer.fromJson(jsonString, JsonObject.class);
 
-
-            return new JsonObject();
+            return jsonResponse;
         } catch (DataAccessException e) {
             ErrorData errorData = new ErrorData(e.getMessage());
-            String jsonString = serializer.toJson(errorData);
+            String jsonString = serializer.toJson(errorData.message());
+            response.body(errorData.message());
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
             response.status(401);
             return jsonObject;

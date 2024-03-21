@@ -82,7 +82,6 @@ public class GameHandler {
 
     public Object joinGame (Request request, Response response){
         GameService gameService = new GameService();
-        UserService userService = new UserService();
         Gson serializer = new Gson();
         try{
             String authToken = request.headers("authorization");

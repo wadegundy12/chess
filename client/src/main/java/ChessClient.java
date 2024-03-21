@@ -30,7 +30,6 @@ public class ChessClient {
                 case "quit" -> "Goodbye";
                 case "login" -> login(params);
                 case "register" -> register(params);
-                case "join" -> joinGame(params);
                 default -> " ";
             };
         }
@@ -39,6 +38,9 @@ public class ChessClient {
             case "logout" -> logout();
             case "create" -> createGame(params);
             case "list" -> listGames();
+            case "join" -> joinGame(params);
+            case "observe" -> observeGame(params);
+
             default -> "";
         };
     }
@@ -139,18 +141,48 @@ public class ChessClient {
         }
     }
 
-    private String joinGame(String[] params) throws DataAccessException {
+    private String joinGame(String[] params) {
         int gameNum;
+        String teamColor;
         try{
+            if(params.length < 1){
+                return "Not enough information";
+            }
+            teamColor = (params.length >= 2) ? params[1] : null;
             gameNum = Integer.parseInt(params[0]);
+
+            if (gameNum < 0 | gameNum >= gameArray.length){
+                return "Game number out of range";
+            }
+            server.joinGame(gameNum, teamColor);
         } catch (NumberFormatException e) {
             return "Did not input a valid number";
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
-        if (gameNum < 0 | gameNum >= gameArray.length){
-            return "Game number out of range";
+
+
+        return "Joined game as" + teamColor;
+    }
+
+    private String observeGame(String[] params) {
+        int gameNum;
+        try {
+            if (params.length < 1) {
+                return "Not enough information";
+            }
+            gameNum = Integer.parseInt(params[0]);
+            if (gameNum < 0 | gameNum >= gameArray.length) {
+                return "Game number out of range";
+            }
+            server.joinGame(gameNum, null);
+
+        } catch (NumberFormatException e) {
+            return "Did not input a valid number";
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
-        server.joinGame(gameNum);
-        return "Game added";
+        return "Joined game as observer";
     }
 
 }

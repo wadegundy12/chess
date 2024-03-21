@@ -89,7 +89,7 @@ public class GameDAOTests {
         int gameIDOne = gameDAO.createGame("Wade");
         int gameIDTwo = gameDAO.createGame("Test");
         ChessGame tempGame = gameDAO.getGame(gameIDOne).getGame();
-        GameData gameData = new GameData(gameIDOne, "newWhiteUsername", null, null, tempGame);
+        GameData gameData = new GameData(gameIDOne, "newWhiteUsername", null, null, tempGame,null);
         gameDAO.updateGame(gameIDOne, gameData);
         Assertions.assertEquals(gameData, gameDAO.getGame(gameIDOne));
     }
@@ -99,7 +99,7 @@ public class GameDAOTests {
         SQLGameDAO gameDAO = new SQLGameDAO();
         int gameIDOne = gameDAO.createGame("Wade");
         ChessGame tempGame = gameDAO.getGame(gameIDOne).getGame();
-        GameData gameData = new GameData(gameIDOne, "newWhiteUsername", null, null, tempGame);
+        GameData gameData = new GameData(gameIDOne, "newWhiteUsername", null, null, tempGame,null);
         Assertions.assertThrows(DataAccessException.class, () -> {
             gameDAO.updateGame(123, gameData);
         });

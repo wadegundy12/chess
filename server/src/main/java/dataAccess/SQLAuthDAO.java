@@ -54,7 +54,7 @@ public class SQLAuthDAO implements AuthDAO {
                     if (rs.next()) {
                         String foundAuthToken = rs.getString("authToken");
                         String username = rs.getString("username");
-                        return new AuthData(foundAuthToken, username);
+                        return new AuthData(foundAuthToken, username, null);
                     }
                 }
             }
@@ -104,7 +104,7 @@ public class SQLAuthDAO implements AuthDAO {
                 while (rs.next()) {
                     String authToken = rs.getString("authToken");
                     String username = rs.getString("username");
-                    authList.put(authToken, new AuthData(authToken, username));
+                    authList.put(authToken, new AuthData(authToken, username,null));
                 }
             }
             return authList;

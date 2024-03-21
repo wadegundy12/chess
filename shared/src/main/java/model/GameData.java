@@ -12,17 +12,19 @@ public class GameData {
     private String blackUsername;
     private String gameName;
     private ChessGame game;
+    private String errorMessage;
 
 
 
 
-    public GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game){
+    public GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game, String errorMessage){
 
         this.gameID = gameID;
         this.whiteUsername = whiteUsername;
         this.blackUsername = blackUsername;
         this.gameName = gameName;
         this.game = game;
+        this.errorMessage = errorMessage;
     }
 
     public int getGameID() {
@@ -65,6 +67,9 @@ public class GameData {
         this.game = game;
     }
 
+    public void setErrorMessage(String message){this.errorMessage = message;}
+
+    public String getErrorMessage() {return errorMessage;}
 
     @Override
     public boolean equals(Object o) {

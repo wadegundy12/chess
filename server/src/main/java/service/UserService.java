@@ -19,7 +19,7 @@ public class UserService {
     public AuthData register(UserData user) throws DataAccessException {
         uData.createUser(user);
         String authToken = aData.createAuth(user.username());
-        return new AuthData(authToken, user.username());
+        return new AuthData(authToken, user.username(), null);
     }
 
     public AuthData login(UserData user) throws DataAccessException {
@@ -34,7 +34,7 @@ public class UserService {
 
 
 
-        return new AuthData(aData.createAuth(user.username()), user.username());
+        return new AuthData(aData.createAuth(user.username()), user.username(), null);
     }
 
     public void logout (String authToken) throws DataAccessException {

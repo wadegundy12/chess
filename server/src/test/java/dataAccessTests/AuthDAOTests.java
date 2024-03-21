@@ -53,7 +53,7 @@ public class AuthDAOTests {
     public void getAuth() throws DataAccessException {
         SQLAuthDAO authDAO = new SQLAuthDAO();
         String tempAuth = authDAO.createAuth("Wade");
-        Assertions.assertEquals(new AuthData(tempAuth, "Wade"), authDAO.getAuth(tempAuth));
+        Assertions.assertEquals(new AuthData(tempAuth, "Wade", null), authDAO.getAuth(tempAuth));
     }
 
     @Test

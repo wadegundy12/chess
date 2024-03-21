@@ -29,7 +29,7 @@ public class RegisterHandler {
             jsonString = serializer.toJson(authData);
         } catch (DataAccessException e) {
             ErrorData errorData = new ErrorData(e.getMessage());
-            jsonString = serializer.toJson(errorData);
+            jsonString = serializer.toJson(new AuthData(null, null, errorData.message()));
 
 
             if (e.getMessage().charAt(e.getMessage().length() -1) == 'n') {

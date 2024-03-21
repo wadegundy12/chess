@@ -31,8 +31,8 @@ public class GameServiceTests {
     public void createValidGame() throws DataAccessException{
         UserService userService = new UserService();
         GameService newGameService = new GameService();
-        AuthData authData1 = userService.register(new UserData("Wade", "", ""));
-        AuthData authData2 = userService.register(new UserData("Nathan", "", ""));
+        AuthData authData1 = userService.register(new UserData("Wade", "", "", null));
+        AuthData authData2 = userService.register(new UserData("Nathan", "", "", null));
 
         int game1ID = newGameService.createGame("wade's game", authData2.authToken());
         int game2ID = newGameService.createGame("nathan's game", authData2.authToken());
@@ -49,7 +49,7 @@ public class GameServiceTests {
 
         GameService newGameService = new GameService();
 
-        AuthData authData1 = userService.register(new UserData("Wade", "", ""));
+        AuthData authData1 = userService.register(new UserData("Wade", "", "", null));
         newGameService.createGame("wade's game", authData1.authToken());
         Assertions.assertThrows(DataAccessException.class, () -> { newGameService.createGame("wade's game", authData1.authToken());});
     }
@@ -62,8 +62,8 @@ public class GameServiceTests {
 
         ChessGame tempGame = new ChessGame();
 
-        AuthData authData1 = userService.register(new UserData("Wade", "", ""));
-        AuthData authData2 = userService.register(new UserData("Nathan", "", ""));
+        AuthData authData1 = userService.register(new UserData("Wade", "", "", null));
+        AuthData authData2 = userService.register(new UserData("Nathan", "", "", null));
 
         int gameID = newGameService.createGame("wade's game", authData1.authToken());
         newGameService.createGame("nathan's game", authData2.authToken());
@@ -71,7 +71,7 @@ public class GameServiceTests {
 
 
         newGameService.joinGame("WHITE", gameID, authData1.authToken());
-        Assertions.assertEquals(new GameData(gameID, "Wade", null, "wade's game", tempGame), newGameService.getGameData(gameID));
+        Assertions.assertEquals(new GameData(gameID, "Wade", null, "wade's game", tempGame, null), newGameService.getGameData(gameID));
     }
 
     @Test
@@ -79,8 +79,8 @@ public class GameServiceTests {
         GameService newGameService = new GameService();
         UserService userService = new UserService();
 
-        AuthData authData1 = userService.register(new UserData("Wade", "", ""));
-        AuthData authData2 = userService.register(new UserData("Nathan", "", ""));
+        AuthData authData1 = userService.register(new UserData("Wade", "", "", null));
+        AuthData authData2 = userService.register(new UserData("Nathan", "", "", null));
 
         ChessGame tempGame = new ChessGame();
         int gameID = newGameService.createGame("wade's game", authData1.authToken());
@@ -94,13 +94,13 @@ public class GameServiceTests {
         newGameService.joinGame("BLACK", gameID, authData2.authToken());
 
 
-        Assertions.assertEquals(new GameData(gameID, "Wade", "Nathan", "wade's game", tempGame), newGameService.getGameData(gameID));
+        Assertions.assertEquals(new GameData(gameID, "Wade", "Nathan", "wade's game", tempGame, null), newGameService.getGameData(gameID));
     }
 
     @Test
     public void listZeroGames() throws DataAccessException{
         UserService userService = new UserService();
-        AuthData authData1 = userService.register(new UserData("Wade", "", ""));
+        AuthData authData1 = userService.register(new UserData("Wade", "", "", null));
 
 
         GameService newGameService = new GameService();
