@@ -1,7 +1,9 @@
 import dataAccess.DataAccessException;
+import model.AuthData;
 import model.GameData;
 import model.UserData;
 import server.handlers.records.GameName;
+import server.handlers.records.GamesListRecord;
 
 import java.util.Arrays;
 
@@ -70,14 +72,16 @@ public class ChessClient {
         if(params.length < 3){
             return "Not enough information given";
         }
-        UserData user = new UserData(params[0], params[1], params[2]);
-        try {
-            authToken = server.register(user).authToken();
-            loggedIn = true;
-            return "Successfully registered and logged in";
-        } catch (DataAccessException e) {
-            return e.getMessage();
+        UserData user = new UserData(params[0], params[1], params[2], null);
+
+        AuthData authData = server.register(user);
+        if (authData.errorMessage() != null) {
+            return authData.errorMessage();
         }
+        authToken = authData.authToken();
+        loggedIn = true;
+        return "Successfully registered and logged in";
+
     }
 
     private String login(String[] params){
@@ -87,39 +91,37 @@ public class ChessClient {
         if(params.length < 2){
             return "Not enough information given";
         }
-        UserData user = new UserData(params[0],params[1],null);
-        try {
-            authToken = server.login(user).authToken();
-            loggedIn = true;
-            return "Successfully logged in";
-        } catch (DataAccessException e) {
-            return e.getMessage();
+        UserData user = new UserData(params[0],params[1],null,null);
+        AuthData authData = server.login(user);
+        if (authData.errorMessage() != null) {
+            return authData.errorMessage();
         }
+        authToken = authData.authToken();
+        loggedIn = true;
+        return "Successfully logged in";
     }
 
     private String logout(){
         if (!loggedIn){
             return "Already logged out";
         }
-        try {
-            server.logout(authToken);
-            loggedIn = false;
-            return "Successfully logged out";
-        } catch (DataAccessException e) {
-            return e.getMessage();
+        String result = server.logout(authToken);
+        if(!result.isEmpty()){
+            return result;
         }
+        loggedIn = false;
+        return "Successfully logged out";
     }
 
     private String createGame(String[] params){
         if (!loggedIn){
             return "Not logged in";
         }
-        try {
-            server.createGame(new GameName(params[0]), authToken);
-            return "Game created";
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+        String result = server.createGame(new GameName(params[0]), authToken);
+        if(!result.isEmpty()){
+            return result;
         }
+        return "Game created";
     }
 
     private String listGames(){
@@ -127,18 +129,22 @@ public class ChessClient {
         if (!loggedIn){
             return "Not logged in";
         }
-        try{
-            gameArray = server.listGames(authToken);
-            for (int i = 0; i < gameArray.length; i++){
-                output.append("\tGame ").append(i);
-                output.append(": \u001B[32Name: ").append(gameArray[i].getGameName()).append("\n\t\tWhite Username: ");
-                output.append("\n\t\t\u001B[32White Username: ").append(gameArray[i].getWhiteUsername());
-                output.append("\n\t\t\u001B[32Black Username: ").append(gameArray[i].getBlackUsername()).append("\u001B[0m\n");
-            }
-            return output.toString();
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+        GamesListRecord gamesListRecord = server.listGames(authToken);
+        if (gamesListRecord.errorMessage() != null){
+            return gamesListRecord.errorMessage();
         }
+
+        gameArray = gamesListRecord.games().toArray(new GameData[0]);
+        if (gameArray.length == 0){
+            return "No current games to list";
+        }
+        for (int i = 0; i < gameArray.length; i++){
+            output.append("\tGame ").append(i);
+            output.append(": \u001B[32Name: ").append(gameArray[i].getGameName()).append("\n\t\tWhite Username: ");
+            output.append("\n\t\t\u001B[32White Username: ").append(gameArray[i].getWhiteUsername());
+            output.append("\n\t\t\u001B[32Black Username: ").append(gameArray[i].getBlackUsername()).append("\u001B[0m\n");
+        }
+        return output.toString();
     }
 
     private String joinGame(String[] params) {
@@ -157,8 +163,6 @@ public class ChessClient {
             server.joinGame(gameNum, teamColor);
         } catch (NumberFormatException e) {
             return "Did not input a valid number";
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
         }
 
 
@@ -179,8 +183,6 @@ public class ChessClient {
 
         } catch (NumberFormatException e) {
             return "Did not input a valid number";
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
         }
         return "Joined game as observer";
     }

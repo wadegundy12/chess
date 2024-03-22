@@ -27,22 +27,20 @@ public class GameHandler {
             int gameId = gameService.createGame(gameNameRecord.gameName(), authToken);
 
             // Create a GameIDRecord object
-            GameIDRecord gameIDRecord = new GameIDRecord(gameId);
+            GameIDRecord gameIDRecord = new GameIDRecord(gameId, null);
 
             // Serialize the GameIDRecord to JSON
-            JsonObject jsonResponse = new JsonObject();
-            jsonResponse.addProperty("gameID", gameIDRecord.gameID());
-
-            // Set response type and body
+            JsonObject jsonResponse;
             response.type("application/json");
-            response.body(jsonResponse.toString());
 
-            // Return the JSON response
+            response.body(serializer.toJson(gameIDRecord));
+            String jsonString = serializer.toJson(gameIDRecord);
+            jsonResponse = serializer.fromJson(jsonString, JsonObject.class);
             return jsonResponse;
 
         } catch (DataAccessException e) {
-            ErrorData errorData = new ErrorData(e.getMessage());
-            String jsonString = serializer.toJson(errorData);
+            String jsonString = serializer.toJson(new GameIDRecord(-1, e.getMessage()));
+            response.body(serializer.toJson(new GameIDRecord(-1, e.getMessage())));
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
             response.status(401);
             return jsonObject;
@@ -58,22 +56,20 @@ public class GameHandler {
             String authToken = request.headers("authorization");
             Collection<GameData> gamesList =  gameService.listGames(authToken);
 
-            GamesListRecord gamesListObject = new GamesListRecord(gamesList);
+            GamesListRecord gamesListObject = new GamesListRecord(gamesList, null);
 
-            String jsonResponse = serializer.toJson(gamesListObject);
+            String jsonString = serializer.toJson(gamesListObject);
 
             // Set response type and body
             response.type("application/json");
-            response.body(jsonResponse);
+            response.body(jsonString);
 
             // Return the JSON response
-            return jsonResponse;
-
-
+            return jsonString;
 
         }catch (DataAccessException e){
             ErrorData errorData = new ErrorData(e.getMessage());
-            String jsonString = serializer.toJson(errorData);
+            String jsonString = serializer.toJson(new GamesListRecord(null, errorData.message()));
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
             response.status(401);
             return jsonObject;
@@ -89,22 +85,22 @@ public class GameHandler {
 
             gameService.joinGame(gameRequest.playerColor(), gameRequest.gameID(), authToken);
 
-            JsonObject jsonResponse = new JsonObject();
+            String jsonString = serializer.toJson("");
+            response.status(200);
 
 
             // Set response type and body
             response.type("application/json");
-            response.body(jsonResponse.toString());
+            response.body(jsonString);
 
             // Return the JSON response
-            return jsonResponse;
+            return jsonString;
 
 
 
         }catch (DataAccessException e){
             ErrorData errorData = new ErrorData(e.getMessage());
-            String jsonString = serializer.toJson(errorData);
-            JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
+            String jsonString = serializer.toJson(errorData.message());
 
             if (e.getMessage().charAt(e.getMessage().length() -1) == 'n') {
                 response.status(403);
@@ -115,7 +111,7 @@ public class GameHandler {
             else{
                 response.status(401);
             }
-            return jsonObject;
+            return jsonString;
         }
 
     }
