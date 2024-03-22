@@ -33,9 +33,9 @@ public class ServerFacade {
         return this.makeRequest("POST", path, user, AuthData.class, null);
     }
 
-    public String logout(String authToken){
+    public ErrorData logout(String authToken){
         String path = "/session";
-        return this.makeRequest("DELETE", path, null, String.class, authToken);
+        return this.makeRequest("DELETE", path, null, ErrorData.class, authToken);
     }
 
     public GamesListRecord listGames(String authToken){
@@ -65,12 +65,13 @@ public class ServerFacade {
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
-            writeBody(request, http);
+
             if (authToken != null){
                 writeHeader(request,http,authToken);
             }
+            writeBody(request, http);
             http.connect();
-            throwIfNotSuccessful(http);
+            //throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -88,9 +89,6 @@ public class ServerFacade {
     }
 
     private static void writeHeader(Object request, HttpURLConnection http, String header) {
-        if (request != null) {
-            http.setRequestProperty("Content-Type", "application/json");
-        }
         if (header != null && !header.isEmpty()) {
             http.setRequestProperty("authorization", header);
         }
@@ -104,6 +102,8 @@ public class ServerFacade {
                 if (responseClass != null) { 
                     response = new Gson().fromJson(reader, responseClass);
                 }
+            }catch (IOException ex){
+
             }
         }
         return response;

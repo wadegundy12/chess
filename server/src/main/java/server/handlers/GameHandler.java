@@ -71,6 +71,7 @@ public class GameHandler {
             String jsonString = serializer.toJson(new GamesListRecord(null, e.getMessage()));
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
             response.status(401);
+            response.body(jsonString);
             return jsonObject;
         }
     }
@@ -108,6 +109,7 @@ public class GameHandler {
             else{
                 response.status(401);
             }
+            response.body(jsonString);
             return jsonString;
         }
 

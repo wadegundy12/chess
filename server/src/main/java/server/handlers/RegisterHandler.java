@@ -19,7 +19,7 @@ public class RegisterHandler {
         Gson serializer = new Gson();
 
         UserData userData = serializer.fromJson(request.body(), UserData.class);
-        JsonObject jsonResponse;
+
         try {
             authData = userService.register(userData);
 
@@ -40,7 +40,7 @@ public class RegisterHandler {
             }
             return jsonString;
         }
-
+        response.body(jsonString);
         return jsonString;
 
     }

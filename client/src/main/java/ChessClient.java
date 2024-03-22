@@ -105,7 +105,7 @@ public class ChessClient {
         if (!loggedIn){
             return "Already logged out";
         }
-        String result = server.logout(authToken);
+        String result = server.logout(authToken).message();
         if(!result.isEmpty()){
             return result;
         }
@@ -140,9 +140,9 @@ public class ChessClient {
         }
         for (int i = 0; i < gameArray.length; i++){
             output.append("\tGame ").append(i);
-            output.append(": \u001B[32Name: ").append(gameArray[i].getGameName()).append("\n\t\tWhite Username: ");
-            output.append("\n\t\t\u001B[32White Username: ").append(gameArray[i].getWhiteUsername());
-            output.append("\n\t\t\u001B[32Black Username: ").append(gameArray[i].getBlackUsername()).append("\u001B[0m\n");
+            output.append(": Name: ").append(gameArray[i].getGameName());
+            output.append("\n\t\tWhite Username: ").append(gameArray[i].getWhiteUsername());
+            output.append("\n\t\tBlack Username: ").append(gameArray[i].getBlackUsername()).append("\u001B[0m\n");
         }
         return output.toString();
     }

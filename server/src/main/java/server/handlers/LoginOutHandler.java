@@ -35,6 +35,7 @@ public class LoginOutHandler {
             ErrorData errorData = new ErrorData(e.getMessage());
             String jsonString = serializer.toJson(new AuthData(null,null, errorData.message()));
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
+            response.body(jsonString);
             response.status(401);
             return jsonObject;
         }
