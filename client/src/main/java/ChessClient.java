@@ -117,8 +117,8 @@ public class ChessClient {
         if (!loggedIn){
             return "Not logged in";
         }
-        String result = server.createGame(new GameName(params[0]), authToken);
-        if(!result.isEmpty()){
+        String result = server.createGame(new GameName(params[0]), authToken).errorMessage();
+        if(result != null){
             return result;
         }
         return "Game created";
@@ -160,7 +160,10 @@ public class ChessClient {
             if (gameNum < 0 | gameNum >= gameArray.length){
                 return "Game number out of range";
             }
-            server.joinGame(gameNum, teamColor);
+            String errorMessage = server.joinGame(gameNum, teamColor).message();
+            if (errorMessage != null){
+                return errorMessage;
+            }
         } catch (NumberFormatException e) {
             return "Did not input a valid number";
         }
@@ -179,7 +182,10 @@ public class ChessClient {
             if (gameNum < 0 | gameNum >= gameArray.length) {
                 return "Game number out of range";
             }
-            server.joinGame(gameNum, null);
+            String errorMessage = server.joinGame(gameNum, null).message();
+            if (errorMessage != null){
+                return errorMessage;
+            }
 
         } catch (NumberFormatException e) {
             return "Did not input a valid number";

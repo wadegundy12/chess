@@ -3,9 +3,7 @@ import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import server.handlers.records.GameName;
-import server.handlers.records.GamesListRecord;
-import server.handlers.records.JoinGameRequest;
+import server.handlers.records.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,14 +46,14 @@ public class ServerFacade {
         return gamesListRecord;
     }
 
-    public String createGame(GameName gameName, String authToken) {
+    public GameIDRecord createGame(GameName gameName, String authToken) {
         String path = "/game";
-        return this.makeRequest("POST", path, gameName, String.class, authToken);
+        return this.makeRequest("POST", path, gameName, GameIDRecord.class, authToken);
     }
 
-    public String joinGame(int gameNum, String teamColor) {
+    public ErrorData joinGame(int gameNum, String teamColor) {
         String path = "/game";
-        return this.makeRequest("PUT", path, new JoinGameRequest(teamColor, games[gameNum].getGameID()), String.class,null);
+        return this.makeRequest("PUT", path, new JoinGameRequest(teamColor, games[gameNum].getGameID()), ErrorData.class,null);
     }
 
 

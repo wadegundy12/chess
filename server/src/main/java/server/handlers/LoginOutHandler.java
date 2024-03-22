@@ -54,13 +54,13 @@ public class LoginOutHandler {
             userService.logout(authToken);
             response.type("application/json");
             response.body(serializer.toJson(""));
-            String jsonString = serializer.toJson("");
+            String jsonString = serializer.toJson(new ErrorData(null));
             jsonResponse = serializer.fromJson(jsonString, JsonObject.class);
 
             return jsonResponse;
         } catch (DataAccessException e) {
             ErrorData errorData = new ErrorData(e.getMessage());
-            String jsonString = serializer.toJson(errorData.message());
+            String jsonString = serializer.toJson(new ErrorData(errorData.message()));
             response.body(errorData.message());
             JsonObject jsonObject = serializer.fromJson(jsonString, JsonObject.class);
             response.status(401);

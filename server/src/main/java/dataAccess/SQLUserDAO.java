@@ -81,7 +81,7 @@ public class SQLUserDAO implements UserDao {
                         String foundUsername = rs.getString("username");
                         String password = rs.getString("password");
                         String email = rs.getString("email");
-                        return new UserData(foundUsername, password, email);
+                        return new UserData(foundUsername, password, email, null);
                     }
                 }
             }
@@ -104,7 +104,7 @@ public class SQLUserDAO implements UserDao {
                     String username = rs.getString("username");
                     String password = rs.getString("password");
                     String email = rs.getString("email");
-                    userList.add(new UserData(username, password, email));
+                    userList.add(new UserData(username, password, email, null));
                 }
             }
             return userList;
