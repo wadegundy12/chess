@@ -4,6 +4,7 @@ import chess.ChessPosition;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import server.handlers.records.ErrorData;
 import server.handlers.records.GameName;
 import server.handlers.records.GamesListRecord;
 import serverFacade.ServerFacade;
@@ -146,7 +147,7 @@ public class ChessClient {
             output.append("\tGame ").append(i + 1);
             output.append(": Name: ").append(games.get(i).getGameName());
             output.append("\n\t\tWhite Username: ").append(games.get(i).getWhiteUsername());
-            output.append("\n\t\tBlack Username: ").append(games.get(i).getBlackUsername());
+            output.append("\n\t\tBlack Username: ").append(games.get(i).getBlackUsername()).append("\n");
         }
         return output.toString();
     }
@@ -165,7 +166,8 @@ public class ChessClient {
             if (gameNum < 0 | gameNum >= games.size()){
                 return "Game number out of range";
             }
-            String errorMessage = server.joinGame(gameNum, teamColor, authToken).message();
+
+            String errorMessage = server.joinGame(games.get(gameNum).getGameID(), teamColor, authToken).message();
             if (errorMessage != null){
                 return errorMessage;
             }
@@ -177,9 +179,9 @@ public class ChessClient {
             teamColor = "observer";
         }
 
-        String output = "Joined game as " + teamColor + "\n" + teamColor + "'s View:\n";
-        output += drawBoard(games.get(gameNum).getGame(), (teamColor.equals("White")));
+        String output = "Joined game as " + teamColor + "\n" + teamColor + "'s View:\n\u001B[0m";
         output += drawBoard(games.get(gameNum).getGame(), (teamColor.equals("Black")));
+        output += drawBoard(games.get(gameNum).getGame(), (!teamColor.equals("Black")));
         return output;
     }
 
@@ -207,7 +209,15 @@ public class ChessClient {
     private String drawBoard(ChessGame game, boolean blackPerspective){
         String resetStyle = "\u001B[0m";
         StringBuilder output = new StringBuilder();
+        char[] columnLetters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+
+
+
+
         for (int row = blackPerspective ? 8 : 1; blackPerspective ? row >= 1 : row <= 8; row += blackPerspective ? -1 : 1) {
+
+            output.append(" ").append(9 - row).append(" ");
+
             for (int col = blackPerspective ? 8 : 1; blackPerspective ? col >= 1 : col <= 8; col += blackPerspective ? -1 : 1) {
                 ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row,col));
                 boolean isWhiteSquare = (row + col) % 2 == 0;
@@ -228,6 +238,11 @@ public class ChessClient {
             }
             output.append("\n");
         }
+        output.append("   ");
+        for (int i = blackPerspective ? 8 : 1; blackPerspective ? i >= 1 : i <= 8; i += blackPerspective ? -1 : 1) {
+            output.append(" ").append(columnLetters[i - 1]).append(" ");
+        }
+        output.append("\n");
         output.append("\n");
         return output.toString();
     }

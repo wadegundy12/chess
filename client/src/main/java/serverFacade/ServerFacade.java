@@ -16,15 +16,16 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 public class ServerFacade {
 
     private final String serverUrl;
-    private ArrayList<GameData> games;
+
 
     public ServerFacade(String url) {
         this.serverUrl = url;
-        games = new ArrayList<>();
+
     }
 
     public AuthData register(UserData user) {
@@ -75,11 +76,6 @@ public class ServerFacade {
                 default -> throw new IllegalStateException("Unexpected value: " + e.getMessage());
             };
         }
-
-
-
-
-        games.addAll(gamesListRecord.games());
         return gamesListRecord;
     }
 
@@ -96,13 +92,11 @@ public class ServerFacade {
         }
     }
 
-    public ErrorData joinGame(int gameNum, String teamColor, String authToken) {
+    public ErrorData joinGame(int gameID, String teamColor, String authToken) {
         String path = "/game";
-        if(games.isEmpty() | gameNum > games.size()){
-            return new ErrorData("Error: bad request");
-        }
+
         try {
-            return this.makeRequest("PUT", path, new JoinGameRequest(teamColor, games.get(gameNum).getGameID()), ErrorData.class,authToken);
+            return this.makeRequest("PUT", path, new JoinGameRequest(teamColor, gameID), ErrorData.class,authToken);
         } catch (DataAccessException e) {
             return switch (e.getMessage()){
                 case "400" -> new ErrorData("Error: bad request");

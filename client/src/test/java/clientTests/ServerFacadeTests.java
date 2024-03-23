@@ -140,7 +140,7 @@ public class ServerFacadeTests {
         GameIDRecord gameIDRecord = serverFacade.createGame(new GameName("wade"), authData1.authToken());
         GamesListRecord gamesListRecord = serverFacade.listGames(authData1.authToken());
         ErrorData errorData = serverFacade.joinGame(0,"white", authData1.authToken());
-        Assertions.assertNull(errorData.message());
+        Assertions.assertEquals("Error: bad request", errorData.message());
     }
 
     @Test
