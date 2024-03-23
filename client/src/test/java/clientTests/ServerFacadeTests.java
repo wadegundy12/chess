@@ -14,12 +14,13 @@ import serverFacade.ServerFacade;
 public class ServerFacadeTests {
 
     private static Server server;
-    private static ServerFacade serverFacade =  new ServerFacade("http://localhost:8080");;
+    private static ServerFacade serverFacade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
-        int port = server.run(8080);
+        int port = server.run(0);
+        serverFacade = new ServerFacade("http://localhost:" + port);
         System.out.println("Started test HTTP server on " + port);
     }
 
