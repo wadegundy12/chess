@@ -27,12 +27,12 @@ public class UserServiceTests {
         UserService userService = new UserService();
         Collection<UserData> testUsers = new HashSet<>();
 
-        testUsers.add(new UserData("Wade", "GUNDY", "wdg23@gmail"));
-        testUsers.add(new UserData("Nathan", "smelly", "IlvCS@yahoo"));
+        testUsers.add(new UserData("Wade", "GUNDY", "wdg23@gmail",null));
+        testUsers.add(new UserData("Nathan", "smelly", "IlvCS@yahoo", null));
 
 
-        userService.register(new UserData("Wade", "GUNDY", "wdg23@gmail"));
-        userService.register(new UserData("Nathan", "smelly", "IlvCS@yahoo"));
+        userService.register(new UserData("Wade", "GUNDY", "wdg23@gmail",null));
+        userService.register(new UserData("Nathan", "smelly", "IlvCS@yahoo",null));
         Assertions.assertEquals(testUsers, userService.getUserList());
 
     }
@@ -50,7 +50,7 @@ public class UserServiceTests {
         Collection<UserData> testUsers = new HashSet<>();
         Map<String, AuthData> testAuths = new HashMap<>();
 
-        UserData tempUser = new UserData("Wade", "GUNDY", "wdg23@gmail");
+        UserData tempUser = new UserData("Wade", "GUNDY", "wdg23@gmail",null);
         testUsers.add(tempUser);
         AuthData authData = userService.register(tempUser);
         userService.logout(authData.authToken());
@@ -64,7 +64,7 @@ public class UserServiceTests {
         UserService userService = new UserService();
         Collection<UserData> testUsers = new HashSet<>();
         Map<String, AuthData> testAuths = new HashMap<>();
-        UserData tempUser = new UserData("Wade", "GUNDY", "wdg23@gmail");
+        UserData tempUser = new UserData("Wade", "GUNDY", "wdg23@gmail",null);
 
 
         testUsers.add(tempUser);

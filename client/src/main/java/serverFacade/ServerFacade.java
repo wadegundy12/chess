@@ -66,7 +66,7 @@ public class ServerFacade {
 
     public GamesListRecord listGames(String authToken){
         String path = "/game";
-        GamesListRecord gamesListRecord = null;
+        GamesListRecord gamesListRecord;
         try {
             gamesListRecord = this.makeRequest("GET", path, null, GamesListRecord.class, authToken);
         } catch (DataAccessException e) {
@@ -98,6 +98,9 @@ public class ServerFacade {
 
     public ErrorData joinGame(int gameNum, String teamColor, String authToken) {
         String path = "/game";
+        if(games.isEmpty() | gameNum > games.size()){
+            return new ErrorData("Error: bad request");
+        }
         try {
             return this.makeRequest("PUT", path, new JoinGameRequest(teamColor, games.get(gameNum).getGameID()), ErrorData.class,authToken);
         } catch (DataAccessException e) {

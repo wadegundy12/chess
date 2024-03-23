@@ -37,6 +37,7 @@ public class ChessClient {
                 case "quit" -> "Goodbye";
                 case "login" -> login(params);
                 case "register" -> register(params);
+                case "logout" -> logout();
                 default -> "Invalid Input" + loggedOutHelp();
             };
         }
@@ -108,9 +109,6 @@ public class ChessClient {
     }
 
     private String logout(){
-        if (!loggedIn){
-            return "Already logged out";
-        }
         String result = server.logout(authToken).message();
         if(result != null){
             return result;
