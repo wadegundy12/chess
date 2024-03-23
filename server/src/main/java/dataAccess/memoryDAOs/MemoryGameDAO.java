@@ -14,12 +14,6 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public int createGame(String gameName) throws DataAccessException {
-        for (Map.Entry<Integer, GameData> entry : games.entrySet()) {
-            if (entry.getValue().getGameName().equals(gameName)) {
-                throw new DataAccessException("Game already exists");
-            }
-        }
-
         int gameID = Integer.parseInt(UUID.randomUUID().toString().substring(0, 6), 16);
         games.put(gameID, new GameData(gameID, null, null, gameName, new ChessGame(),null));
 

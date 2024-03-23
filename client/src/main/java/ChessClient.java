@@ -210,13 +210,16 @@ public class ChessClient {
         String resetStyle = "\u001B[0m";
         StringBuilder output = new StringBuilder();
         char[] columnLetters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+        String background = EscapeSequences.SET_BG_COLOR_DARK_GREEN;
 
-
-
+        for(int i = 0; i < 10; i++){
+            output.append(background).append("   ");
+        }
+        output.append(resetStyle).append("\n");
 
         for (int row = blackPerspective ? 8 : 1; blackPerspective ? row >= 1 : row <= 8; row += blackPerspective ? -1 : 1) {
 
-            output.append(" ").append(9 - row).append(" ");
+            output.append(background).append(" ").append(9 - row).append(" ");
 
             for (int col = blackPerspective ? 8 : 1; blackPerspective ? col >= 1 : col <= 8; col += blackPerspective ? -1 : 1) {
                 ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row,col));
@@ -236,13 +239,13 @@ public class ChessClient {
                 output.append(resetStyle);
 
             }
-            output.append("\n");
+            output.append(background).append("   ").append(resetStyle).append("\n");
         }
-        output.append("   ");
+        output.append(background).append("   ");
         for (int i = blackPerspective ? 8 : 1; blackPerspective ? i >= 1 : i <= 8; i += blackPerspective ? -1 : 1) {
-            output.append(" ").append(columnLetters[i - 1]).append(" ");
+            output.append(background).append(" ").append(columnLetters[i - 1]).append(" ");
         }
-        output.append("\n");
+        output.append(background).append("   ").append(resetStyle).append("\n");
         output.append("\n");
         return output.toString();
     }

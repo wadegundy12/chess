@@ -32,10 +32,6 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public int createGame(String gameName) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            if (gameExists(connection, gameName)) {
-                throw new DataAccessException("Game already exists");
-            }
-
             int gameID = Integer.parseInt(UUID.randomUUID().toString().substring(0, 6), 16);
             String gameString = gameToString(new GameData(gameID, null, null, gameName, new ChessGame(),null));
 

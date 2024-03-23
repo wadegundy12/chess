@@ -30,7 +30,7 @@ public class GameService {
             throw new DataAccessException("Error: unauthorized");
         }
 
-            return gData.createGame(gameName);
+        return gData.createGame(gameName);
     }
 
     public void joinGame(String teamColor, int gameID, String authToken) throws DataAccessException {
