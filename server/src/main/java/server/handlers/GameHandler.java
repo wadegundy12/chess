@@ -99,6 +99,7 @@ public class GameHandler {
         }catch (DataAccessException e){
             ErrorData errorData = new ErrorData(e.getMessage());
             String jsonString = serializer.toJson(new ErrorData(errorData.message()));
+            response.type("application/json");
 
             if (e.getMessage().charAt(e.getMessage().length() -1) == 'n') {
                 response.status(403);

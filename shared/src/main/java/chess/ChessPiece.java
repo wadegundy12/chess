@@ -15,7 +15,7 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
     }
@@ -33,7 +33,9 @@ public class ChessPiece {
         BISHOP,
         KNIGHT,
         ROOK,
-        PAWN
+        PAWN;
+
+
     }
 
     /**
@@ -513,6 +515,17 @@ public class ChessPiece {
         }
 
         return moves;
+    }
+
+    public String toCharacter(){
+        return switch(type){
+            case KING -> "K";
+            case QUEEN -> "Q";
+            case BISHOP -> "B";
+            case KNIGHT -> "N";
+            case ROOK -> "R";
+            case PAWN -> "P";
+        };
     }
 
     @Override

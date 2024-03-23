@@ -23,7 +23,7 @@ public class UserDAOTests {
     @Test
     public void testClear() throws DataAccessException {
         SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.createUser(new UserData("Wade","password", "testEmail.com"));
+        userDAO.createUser(new UserData("Wade","password", "testEmail.com",null));
         userDAO.clear();
         Collection<UserData> emptyList = new ArrayList<>();
         Assertions.assertEquals(userDAO.getUserList(), emptyList);
@@ -33,7 +33,7 @@ public class UserDAOTests {
     @Test
     public void testCreateUser() throws DataAccessException {
         SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.createUser(new UserData("Wade","password", "testEmail.com"));
+        userDAO.createUser(new UserData("Wade","password", "testEmail.com",null));
         Assertions.assertEquals(userDAO.getUser("Wade").username(), "Wade");
         Assertions.assertEquals(userDAO.getUser("Wade").email(), "testEmail.com");
         Assertions.assertNotNull(userDAO.getUser("Wade").password());
@@ -42,17 +42,17 @@ public class UserDAOTests {
     @Test
     public void failCreateUser() throws DataAccessException {
         SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.createUser(new UserData("Wade","password", "testEmail.com"));
+        userDAO.createUser(new UserData("Wade","password", "testEmail.com",null));
         Assertions.assertThrows(DataAccessException.class, () -> {
-            userDAO.createUser(new UserData("Wade","password", "testEmail.com"));
+            userDAO.createUser(new UserData("Wade","password", "testEmail.com",null));
         });
     }
 
     @Test
     public void testGetUser() throws DataAccessException{
         SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.createUser(new UserData("Wade","password", "testEmail.com"));
-        userDAO.createUser(new UserData("Test2","otherPass", "notAnEmail.com"));
+        userDAO.createUser(new UserData("Wade","password", "testEmail.com",null));
+        userDAO.createUser(new UserData("Test2","otherPass", "notAnEmail.com",null));
 
         Assertions.assertEquals(userDAO.getUser("Wade").email(), "testEmail.com");
         Assertions.assertNotNull(userDAO.getUser("Wade").password());
@@ -64,15 +64,15 @@ public class UserDAOTests {
     @Test
     public void failedGetUser() throws DataAccessException{
         SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.createUser(new UserData("Wade","password", "testEmail.com"));
+        userDAO.createUser(new UserData("Wade","password", "testEmail.com",null));
         Assertions.assertNull(userDAO.getUser("Test2"));
     }
 
     @Test
     public void testGetList() throws DataAccessException{
         SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.createUser(new UserData("Wade","password", "testEmail.com"));
-        userDAO.createUser(new UserData("Test2","otherPass", "notAnEmail.com"));
+        userDAO.createUser(new UserData("Wade","password", "testEmail.com",null));
+        userDAO.createUser(new UserData("Test2","otherPass", "notAnEmail.com",null));
 
 
         Assertions.assertEquals(2, userDAO.getUserList().size());
@@ -87,14 +87,14 @@ public class UserDAOTests {
     @Test
     public void testCheckPassword() throws DataAccessException {
         SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.createUser(new UserData("Wade","password", "testEmail.com"));
+        userDAO.createUser(new UserData("Wade","password", "testEmail.com",null));
         Assertions.assertTrue(userDAO.checkPassword("Wade", "password"));
     }
 
     @Test
     public void wrongPassword() throws DataAccessException {
         SQLUserDAO userDAO = new SQLUserDAO();
-        userDAO.createUser(new UserData("Wade","password", "testEmail.com"));
+        userDAO.createUser(new UserData("Wade","password", "testEmail.com",null));
         Assertions.assertFalse(userDAO.checkPassword("Wade", "nope"));
     }
 
