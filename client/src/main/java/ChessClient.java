@@ -191,11 +191,11 @@ public class ChessClient {
             if (params.length < 1) {
                 return "Not enough information";
             }
-            gameNum = Integer.parseInt(params[0]);
+            gameNum = Integer.parseInt(params[0]) - 1;
             if (gameNum < 0 | gameNum >= games.size()) {
                 return "Game number out of range";
             }
-            String errorMessage = server.joinGame(gameNum, null, authToken).message();
+            String errorMessage = server.joinGame(games.get(gameNum).getGameID(), null, authToken).message();
             if (errorMessage != null){
                 return errorMessage;
             }
@@ -203,7 +203,10 @@ public class ChessClient {
         } catch (NumberFormatException e) {
             return "Did not input a valid number";
         }
-        return "Joined game as observer";
+        String output = "Joined game as observer";
+        output += drawBoard(games.get(gameNum).getGame(), false);
+        output += drawBoard(games.get(gameNum).getGame(), true);
+        return output;
     }
 
     private String drawBoard(ChessGame game, boolean blackPerspective){
