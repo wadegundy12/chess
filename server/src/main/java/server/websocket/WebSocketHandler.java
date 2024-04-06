@@ -1,11 +1,12 @@
 package server.websocket;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.serverMessages.*;
+import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -18,10 +19,10 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        Action action = new Gson().fromJson(message, Action.class);
-        switch (action.type()) {
-            case ENTER -> enter(action.visitorName(), session);
-            case EXIT -> exit(action.visitorName());
+        Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
+        UserGameCommand userGameCommand = gson.fromJson(message, UserGameCommand.class);
+        switch (userGameCommand.getCommandType()) {
+            case LEAVE -> leave()  //TODO: how do i know what this function does, also how do i get username?
         }
     }
 
@@ -30,6 +31,11 @@ public class WebSocketHandler {
         var message = String.format("%s is in the shop", visitorName);
         var notification = new Notification(Notification.Type.ARRIVAL, message);
         connections.broadcast(visitorName, notification);
+    }
+
+    private void leave(String userName, Session session) throws IOException{
+        connections.remove(userName);
+        String message = userName + "left the game";
     }
 
     private void exit(String visitorName) throws IOException {

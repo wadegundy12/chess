@@ -1,7 +1,8 @@
 package server.websocket;
 
 import org.eclipse.jetty.websocket.api.Session;
-import webSocketMessages.Notification;
+import webSocketMessages.serverMessages.*;
+import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,9 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionManager {
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
 
-    public void add(String visitorName, Session session) {
-        var connection = new Connection(visitorName, session);
-        connections.put(visitorName, connection);
+    public void add(String userName, Session session) {
+        var connection = new Connection(userName, session);
+        connections.put(userName, connection);
     }
 
     public void remove(String visitorName) {
