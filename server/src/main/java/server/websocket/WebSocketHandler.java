@@ -6,10 +6,8 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import webSocketMessages.serverMessages.*;
-import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
-import java.util.Timer;
 
 
 @WebSocket
@@ -19,10 +17,12 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
-        UserGameCommand userGameCommand = gson.fromJson(message, UserGameCommand.class);
-        switch (userGameCommand.getCommandType()) {
-            case LEAVE -> leave()  //TODO: how do i know what this function does, also how do i get username?
+        Gson gson = new GsonBuilder().registerTypeAdapter(ServerMessage.class, new ServerMessage.ServerMessageDeserializer()).create();
+        ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
+        switch (serverMessage.getServerMessageType()) {
+            case LOAD_GAME -> loadGame((LoadGame) serverMessage);
+            case ERROR -> error();
+            case NOTIFICATION -> notificationMessage((Notification) serverMessage);
         }
     }
 
@@ -33,10 +33,15 @@ public class WebSocketHandler {
         connections.broadcast(visitorName, notification);
     }
 
-    private void leave(String userName, Session session) throws IOException{
-        connections.remove(userName);
-        String message = userName + "left the game";
+    private void notificationMessage(Notification notification){
+        System.out.println(notification.message);
     }
+
+    private void loadGame(LoadGame serverMessage){
+
+    }
+
+
 
     private void exit(String visitorName) throws IOException {
         connections.remove(visitorName);
