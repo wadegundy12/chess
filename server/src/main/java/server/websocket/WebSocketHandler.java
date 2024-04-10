@@ -10,6 +10,7 @@ import service.GameService;
 import service.UserService;
 import webSocketMessages.serverMessages.*;
 import webSocketMessages.serverMessages.Error;
+import webSocketMessages.userCommands.JoinPlayer;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class WebSocketHandler {
         Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
         UserGameCommand userGameCommand = gson.fromJson(message, UserGameCommand.class);
         switch (userGameCommand.getCommandType()) {
-            case JOIN_PLAYER -> joinPlayer(userGameCommand.getAuthString(), session);
+            case JOIN_PLAYER -> joinPlayer((JoinPlayer)userGameCommand, session);
             case JOIN_OBSERVER -> joinObserver(userGameCommand.getAuthString(), session);
             case MAKE_MOVE ->
             case LEAVE ->
@@ -36,13 +37,17 @@ public class WebSocketHandler {
         }
     }
 
-    private void joinObserver(String authToken, Session session) {
-
-    }
-
-    private void joinPlayer(String authToken, Session session) throws IOException {
+    private void joinObserver(String authToken, Session session) throws IOException {
         connections.add(authToken, session);
         String userName = getUserName(authToken);
+        String message = String.format("%s joined the game", userName);
+        Notification notification = new Notification(message);
+        connections.broadcast(userName, notification);
+    }
+
+    private void joinPlayer(JoinPlayer joinPlayerObject, Session session) throws IOException {
+        connections.add(joinPlayerObject.getAuthString(), session);
+        String userName = getUserName(joinPlayerObject.getAuthString());
         String message = String.format("%s joined the game", userName);
         Notification notification = new Notification(message);
         connections.broadcast(userName, notification);
