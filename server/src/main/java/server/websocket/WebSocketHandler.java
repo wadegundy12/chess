@@ -2,45 +2,51 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import model.AuthData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import service.GameService;
+import service.UserService;
 import webSocketMessages.serverMessages.*;
+import webSocketMessages.serverMessages.Error;
+import webSocketMessages.userCommands.UserGameCommand;
 
 import java.io.IOException;
+import java.util.Map;
 
 
 @WebSocket
 public class WebSocketHandler {
 
+    private GameService gameService = new GameService();
+    private UserService userService = new UserService();
     private final ConnectionManager connections = new ConnectionManager();
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        Gson gson = new GsonBuilder().registerTypeAdapter(ServerMessage.class, new ServerMessage.ServerMessageDeserializer()).create();
-        ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
-        switch (serverMessage.getServerMessageType()) {
-            case LOAD_GAME -> loadGame((LoadGame) serverMessage);
-            case ERROR -> error();
-            case NOTIFICATION -> notificationMessage((Notification) serverMessage);
+        Gson gson = new GsonBuilder().registerTypeAdapter(UserGameCommand.class, new UserGameCommand.UserGameCommandDeserializer()).create();
+        UserGameCommand userGameCommand = gson.fromJson(message, UserGameCommand.class);
+        switch (userGameCommand.getCommandType()) {
+            case JOIN_PLAYER -> joinPlayer(userGameCommand.getAuthString(), session);
+            case JOIN_OBSERVER -> joinObserver(userGameCommand.getAuthString(), session);
+            case MAKE_MOVE ->
+            case LEAVE ->
+            case RESIGN ->
         }
     }
 
-    private void enter(String visitorName, Session session) throws IOException {
-        connections.add(visitorName, session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new Notification(Notification.Type.ARRIVAL, message);
-        connections.broadcast(visitorName, notification);
-    }
-
-    private void notificationMessage(Notification notification){
-        System.out.println(notification.message);
-    }
-
-    private void loadGame(LoadGame serverMessage){
+    private void joinObserver(String authToken, Session session) {
 
     }
 
+    private void joinPlayer(String authToken, Session session) throws IOException {
+        connections.add(authToken, session);
+        String userName = getUserName(authToken);
+        String message = String.format("%s joined the game", userName);
+        Notification notification = new Notification(message);
+        connections.broadcast(userName, notification);
+    }
 
 
     private void exit(String visitorName) throws IOException {
@@ -58,5 +64,9 @@ public class WebSocketHandler {
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
+    }
+
+    public String getUserName(String authToken){
+         return userService.getAuthList().get(authToken).username();
     }
 }
