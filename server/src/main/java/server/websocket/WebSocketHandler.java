@@ -1,14 +1,18 @@
 package server.websocket;
 
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import model.AuthData;
+import dataAccess.DataAccessException;
+import model.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.GameService;
 import service.UserService;
 import webSocketMessages.serverMessages.*;
+import webSocketMessages.serverMessages.Error;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
@@ -36,8 +40,20 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(MakeMove userGameCommand) {
-        gameService.getGameData()
+    private void makeMove(MakeMove userGameCommand) throws IOException {
+        try {
+            gameService.makeMove(userGameCommand.move, userGameCommand.gameID, userGameCommand.getAuthString());
+            ChessMove move = userGameCommand.move;
+            String userName = getUserName(userGameCommand.getAuthString());
+            String message = String.format("%s moved from %s to %s", userName, move.getStartPosition(), move.getEndPosition());
+            Notification notification = new Notification(message);
+            connections.broadcast("", new LoadGame());
+            connections.broadcast(userGameCommand.getAuthString(), notification);
+        } catch (InvalidMoveException e) {
+            connections.replyToRoot(userGameCommand.getAuthString(), new Error("Error: Invalid Move"));
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
@@ -74,23 +90,6 @@ public class WebSocketHandler {
         connections.broadcast(joinPlayerObject.getAuthString(), notification);
     }
 
-
-    private void exit(String visitorName) throws IOException {
-        connections.remove(visitorName);
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new Notification(Notification.Type.DEPARTURE, message);
-        connections.broadcast(visitorName, notification);
-    }
-
-    public void makeNoise(String petName, String sound) throws ResponseException {
-        try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new Notification(Notification.Type.NOISE, message);
-            connections.broadcast("", notification);
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
-        }
-    }
 
     public String getUserName(String authToken){
          return userService.getAuthList().get(authToken).username();

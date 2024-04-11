@@ -44,6 +44,9 @@ public class ServerMessage {
         return Objects.hash(getServerMessageType());
     }
 
+    @Override
+    public String toString() {return new Gson().toJson(this);}
+
     public static class ServerMessageDeserializer implements JsonDeserializer<UserGameCommand> {
         @Override
         public UserGameCommand deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
@@ -58,4 +61,6 @@ public class ServerMessage {
             };
         }
     }
+
+
 }

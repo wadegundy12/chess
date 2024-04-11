@@ -52,6 +52,8 @@ public class UserGameCommand {
         return Objects.hash(getCommandType(), getAuthString());
     }
 
+    public String toString() {return new Gson().toJson(this);}
+
     public static class UserGameCommandDeserializer implements JsonDeserializer<UserGameCommand> {
         @Override
         public UserGameCommand deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
