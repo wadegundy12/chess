@@ -91,7 +91,7 @@ public class WebSocketHandler {
     }
 
 
-    public String getUserName(String authToken){
+    private String getUserName(String authToken){
          return userService.getAuthList().get(authToken).username();
     }
 }
