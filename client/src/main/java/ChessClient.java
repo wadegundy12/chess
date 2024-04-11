@@ -18,13 +18,17 @@ public class ChessClient {
     private boolean loggedIn;
     private String authToken;
     private ServerFacade server = new ServerFacade("http://localhost:8080");
+    private GameData currentGameData;
 
     private ArrayList<GameData> games;
+    public boolean joinedBlack;
 
     public ChessClient() {
         loggedIn = false;
         authToken = "0";
         games = new ArrayList<>();
+        currentGameData = null;
+        joinedBlack = false;
 
     }
 
@@ -178,10 +182,11 @@ public class ChessClient {
         if(teamColor == null){
             teamColor = "observer";
         }
-
+        currentGameData = games.get(gameNum);
+        joinedBlack = (teamColor.equals("Black"));
         String output = "Joined game as " + teamColor + "\n" + teamColor + "'s View:\n\u001B[0m";
-        output += drawBoard(games.get(gameNum).getGame(), (teamColor.equals("Black")));
-        output += drawBoard(games.get(gameNum).getGame(), (!teamColor.equals("Black")));
+        output += drawBoard((teamColor.equals("Black")));
+        output += drawBoard((!teamColor.equals("Black")));
         return output;
     }
 
@@ -204,12 +209,17 @@ public class ChessClient {
             return "Did not input a valid number";
         }
         String output = "Joined game as observer";
-        output += drawBoard(games.get(gameNum).getGame(), false);
-        output += drawBoard(games.get(gameNum).getGame(), true);
+        joinedBlack = false;
+        currentGameData = games.get(gameNum);
+        output += drawBoard(false);
+        output += drawBoard(true);
         return output;
     }
 
-    private String drawBoard(ChessGame game, boolean blackPerspective){
+    public String drawBoard(boolean blackPerspective){
+        if (currentGameData == null){
+            return "Not currently in a game\n";
+        }
         String resetStyle = "\u001B[0m";
         StringBuilder output = new StringBuilder();
         char[] columnLetters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
@@ -225,7 +235,7 @@ public class ChessClient {
             output.append(background).append(" ").append(9 - row).append(" ");
 
             for (int col = blackPerspective ? 8 : 1; blackPerspective ? col >= 1 : col <= 8; col += blackPerspective ? -1 : 1) {
-                ChessPiece piece = game.getBoard().getPiece(new ChessPosition(row,col));
+                ChessPiece piece = currentGameData.getGame().getBoard().getPiece(new ChessPosition(row,col));
                 boolean isWhiteSquare = (row + col) % 2 == 0;
                 String squareBackground = isWhiteSquare ? EscapeSequences.SET_BG_COLOR_WHITE : EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
                 output.append(squareBackground);
