@@ -79,6 +79,8 @@ public class WebSocketHandler {
         String message = String.format("%s joined the game as an observer", userName);
         Notification notification = new Notification(message);
         connections.broadcast(userName, notification);
+        connections.replyToRoot(authToken, new LoadGame());
+
     }
 
     private void joinPlayer(JoinPlayer joinPlayerObject, Session session) throws IOException {
@@ -88,6 +90,7 @@ public class WebSocketHandler {
         String message = String.format("%s joined the game as %s", userName, playerColor);
         Notification notification = new Notification(message);
         connections.broadcast(joinPlayerObject.getAuthString(), notification);
+        connections.replyToRoot(joinPlayerObject.getAuthString(), new LoadGame());
     }
 
 

@@ -9,6 +9,8 @@ import server.handlers.records.GameName;
 import server.handlers.records.GamesListRecord;
 import serverFacade.ServerFacade;
 import ui.EscapeSequences;
+import websocket.NotificationHandler;
+import websocket.WebSocketFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,18 +19,23 @@ public class ChessClient {
 
     private boolean loggedIn;
     private String authToken;
-    private ServerFacade server = new ServerFacade("http://localhost:8080");
+    String serverUrl = "http://localhost:8080";
+    private ServerFacade server = new ServerFacade(serverUrl);
+    private NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
     private GameData currentGameData;
 
     private ArrayList<GameData> games;
     public boolean joinedBlack;
 
-    public ChessClient() {
+    public ChessClient(NotificationHandler notificationHandler) {
         loggedIn = false;
         authToken = "0";
         games = new ArrayList<>();
         currentGameData = null;
         joinedBlack = false;
+        this.notificationHandler = notificationHandler;
+
 
     }
 
@@ -183,6 +190,9 @@ public class ChessClient {
             teamColor = "observer";
         }
         currentGameData = games.get(gameNum);
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+
+
         joinedBlack = (teamColor.equals("Black"));
         String output = "Joined game as " + teamColor + "\n" + teamColor + "'s View:\n\u001B[0m";
         output += drawBoard((teamColor.equals("Black")));

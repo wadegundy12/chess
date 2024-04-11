@@ -10,7 +10,7 @@ public class Repl implements NotificationHandler {
     private final ChessClient client;
 
     public Repl(){
-        this.client = new ChessClient();
+        this.client = new ChessClient(this);
     }
 
     public void run() {
