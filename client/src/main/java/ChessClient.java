@@ -177,21 +177,14 @@ public class ChessClient {
             if (gameNum < 0 | gameNum >= games.size()){
                 return "Game number out of range";
             }
-
-            String errorMessage = server.joinGame(games.get(gameNum).getGameID(), teamColor, authToken).message();
-            if (errorMessage != null){
-                return errorMessage;
+            if(teamColor == null){
+                teamColor = "observer";
             }
+            ws.joinGame(games.get(gameNum).getGameID(), teamColor, authToken);
+
         } catch (NumberFormatException e) {
             return "Did not input a valid number";
         }
-
-        if(teamColor == null){
-            teamColor = "observer";
-        }
-        currentGameData = games.get(gameNum);
-        ws = new WebSocketFacade(serverUrl, notificationHandler);
-
 
         joinedBlack = (teamColor.equals("Black"));
         String output = "Joined game as " + teamColor + "\n" + teamColor + "'s View:\n\u001B[0m";

@@ -5,7 +5,7 @@ import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dataAccess.DataAccessException;
-import model.*;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -16,8 +16,7 @@ import webSocketMessages.serverMessages.Error;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
-import java.util.Locale;
-import java.util.Map;
+
 
 
 @WebSocket
@@ -58,6 +57,7 @@ public class WebSocketHandler {
     }
 
     private void resign(Resign userGameCommand) throws IOException {
+
         connections.remove(userGameCommand.getAuthString());
         String userName = getUserName(userGameCommand.getAuthString());
         String message = String.format("%s resigned the game, you win!", userName);
@@ -84,13 +84,19 @@ public class WebSocketHandler {
     }
 
     private void joinPlayer(JoinPlayer joinPlayerObject, Session session) throws IOException {
-        connections.add(joinPlayerObject.getAuthString(), session);
-        String userName = getUserName(joinPlayerObject.getAuthString());
-        String playerColor = String.valueOf(joinPlayerObject.playerColor).toLowerCase();
-        String message = String.format("%s joined the game as %s", userName, playerColor);
-        Notification notification = new Notification(message);
-        connections.broadcast(joinPlayerObject.getAuthString(), notification);
-        connections.replyToRoot(joinPlayerObject.getAuthString(), new LoadGame());
+        try {
+            connections.add(joinPlayerObject.getAuthString(), session);
+            String userName = getUserName(joinPlayerObject.getAuthString());
+            gameService.joinGame(joinPlayerObject.playerColor.toString(),joinPlayerObject.gameID, joinPlayerObject.getAuthString());
+            String playerColor = String.valueOf(joinPlayerObject.playerColor).toLowerCase();
+            String message = String.format("%s joined the game as %s", userName, playerColor);
+            Notification notification = new Notification(message);
+            connections.broadcast(joinPlayerObject.getAuthString(), notification);
+            connections.replyToRoot(joinPlayerObject.getAuthString(), new LoadGame());
+        } catch (DataAccessException e) {
+            connections.replyToRoot(joinPlayerObject.getAuthString(), new Error(e.getMessage()));
+        }
+
     }
 
 

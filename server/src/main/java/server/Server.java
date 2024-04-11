@@ -4,6 +4,7 @@ import server.handlers.ClearHandler;
 import server.handlers.GameHandler;
 import server.handlers.LoginOutHandler;
 import server.handlers.RegisterHandler;
+import server.websocket.WebSocketHandler;
 import spark.*;
 
 import static spark.Spark.*;
@@ -14,6 +15,8 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.webSocket("/connect", new WebSocketHandler());
 
         // Register your endpoints and handle exceptions here.
         post("/user", ((request, response) -> new RegisterHandler().register(request,response)));

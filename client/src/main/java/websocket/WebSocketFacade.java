@@ -1,22 +1,27 @@
 package websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import webSocketMessages.serverMessages.*;
+import webSocketMessages.userCommands.*;
 
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
 
     Session session;
     NotificationHandler notificationHandler;
+    String serverUrl;
 
 
     public WebSocketFacade(String url, NotificationHandler notificationHandler) {
         try {
+            serverUrl = url;
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
             this.notificationHandler = notificationHandler;
@@ -41,6 +46,24 @@ public class WebSocketFacade extends Endpoint {
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
+
+
+    public void joinGame(int gameID, String teamColor, String authToken) {
+        ChessGame.TeamColor tempColor;
+        switch (teamColor.toLowerCase()){
+            case "white" -> tempColor = ChessGame.TeamColor.WHITE;
+            case "black" -> tempColor = ChessGame.TeamColor.BLACK;
+            default -> tempColor = null;
+        }
+        try{
+            JoinPlayer joinPlayerCommand = new JoinPlayer(authToken, gameID, tempColor);
+            this.session.getBasicRemote().sendText(new Gson().toJson(joinPlayerCommand));
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 
 

@@ -13,6 +13,7 @@ import dataAccess.UserDao;
 import model.GameData;
 
 import java.util.Collection;
+import java.util.Objects;
 
 public class GameService {
 
@@ -49,13 +50,13 @@ public class GameService {
 
         if (teamColor != null) {
             if (teamColor.equalsIgnoreCase("BLACK")){
-                if(tempData.getBlackUsername() != null){
+                if(tempData.getBlackUsername() != null && !Objects.equals(tempData.getBlackUsername(), username)){
                     throw new DataAccessException("Error: already taken");
                 }
                 tempData.setBlackUsername(username);
             }
             else  if (teamColor.equalsIgnoreCase("WHITE")){
-                if(tempData.getWhiteUsername() != null){
+                if(tempData.getWhiteUsername() != null && !Objects.equals(tempData.getWhiteUsername(), username)){
                     throw new DataAccessException("Error: already taken");
                 }
                 tempData.setWhiteUsername(username);
