@@ -1,5 +1,8 @@
 package service;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataAccess.*;
 import dataAccess.memoryDAOs.MemoryAuthDAO;
 import dataAccess.memoryDAOs.MemoryGameDAO;
@@ -65,8 +68,23 @@ public class GameService {
 
     }
 
-    //for testing
+    public void makeMove(ChessMove chessMove, int gameID, String authToken) throws DataAccessException, InvalidMoveException {
+        if(!aData.getAuthList().containsKey(authToken)){
+            throw new DataAccessException("Error: unauthorized");
+        }
 
+        GameData tempData = gData.getGame(gameID);
+        ChessGame tempGame = tempData.getGame();
+        Collection<ChessMove> validMoves = tempGame.validMoves(chessMove.getStartPosition());
+        if (validMoves.contains(chessMove)){
+            tempGame.makeMove(chessMove);
+        }
+
+        tempData.setGame(tempGame);
+        gData.updateGame(gameID, tempData);
+    }
+
+    //for testing
     public void clear(){
         uData.clear();
         aData.clear();
