@@ -64,7 +64,13 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-
-
+    public void joinObserver(int gameID, String authToken){
+        try{
+            JoinObserver joinObserverCommand = new JoinObserver(authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(joinObserverCommand));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.InvalidMoveException;
 import dataAccess.*;
 import dataAccess.memoryDAOs.MemoryAuthDAO;
@@ -69,18 +70,30 @@ public class GameService {
 
     }
 
-    public void makeMove(ChessMove chessMove, int gameID, String authToken) throws DataAccessException, InvalidMoveException {
+    public void makeMove(ChessMove chessMove, int gameID, String authToken, ChessGame.TeamColor playerColor) throws DataAccessException, InvalidMoveException {
         if(!aData.getAuthList().containsKey(authToken)){
             throw new DataAccessException("Error: unauthorized");
+        }
+
+        if(playerColor == null){
+            throw new InvalidMoveException("Cannot move as observer");
         }
 
         GameData tempData = gData.getGame(gameID);
         ChessGame tempGame = tempData.getGame();
         Collection<ChessMove> validMoves = tempGame.validMoves(chessMove.getStartPosition());
-        if (validMoves.contains(chessMove)){
-            tempGame.makeMove(chessMove);
+
+        if(tempGame.isGameOver()){
+            throw new InvalidMoveException("The game is over you silly goose");
         }
 
+        if (!validMoves.contains(chessMove) || tempGame.getBoard().getPiece(chessMove.getStartPosition()).getTeamColor() != tempGame.getTeamTurn()){
+            throw new InvalidMoveException("Invalid Move");
+        }
+        if(playerColor != tempGame.getBoard().getPiece(chessMove.getStartPosition()).getTeamColor()){
+            throw new InvalidMoveException("Invalid Move");
+        }
+        tempGame.makeMove(chessMove);
         tempData.setGame(tempGame);
         gData.updateGame(gameID, tempData);
     }

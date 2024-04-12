@@ -1,5 +1,6 @@
 package server.websocket;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
@@ -25,6 +26,7 @@ public class WebSocketHandler {
     private GameService gameService = new GameService();
     private UserService userService = new UserService();
     private final ConnectionManager connections = new ConnectionManager();
+    private ChessGame.TeamColor teamColor = null;
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
@@ -32,7 +34,7 @@ public class WebSocketHandler {
         UserGameCommand userGameCommand = gson.fromJson(message, UserGameCommand.class);
         switch (userGameCommand.getCommandType()) {
             case JOIN_PLAYER -> joinPlayer((JoinPlayer)userGameCommand, session);
-            case JOIN_OBSERVER -> joinObserver(userGameCommand.getAuthString(), session);
+            case JOIN_OBSERVER -> joinObserver((JoinObserver)userGameCommand, session);
             case MAKE_MOVE -> makeMove((MakeMove)userGameCommand);
             case LEAVE -> leave((Leave)userGameCommand);
             case RESIGN -> resign((Resign)userGameCommand);
@@ -41,7 +43,7 @@ public class WebSocketHandler {
 
     private void makeMove(MakeMove userGameCommand) throws IOException {
         try {
-            gameService.makeMove(userGameCommand.move, userGameCommand.gameID, userGameCommand.getAuthString());
+            gameService.makeMove(userGameCommand.move, userGameCommand.gameID, userGameCommand.getAuthString(), teamColor);
             ChessMove move = userGameCommand.move;
             String userName = getUserName(userGameCommand.getAuthString());
             String message = String.format("%s moved from %s to %s", userName, move.getStartPosition(), move.getEndPosition());
@@ -57,7 +59,6 @@ public class WebSocketHandler {
     }
 
     private void resign(Resign userGameCommand) throws IOException {
-
         connections.remove(userGameCommand.getAuthString());
         String userName = getUserName(userGameCommand.getAuthString());
         String message = String.format("%s resigned the game, you win!", userName);
@@ -73,26 +74,38 @@ public class WebSocketHandler {
         connections.broadcast(userGameCommand.getAuthString(), notification);
     }
 
-    private void joinObserver(String authToken, Session session) throws IOException {
-        connections.add(authToken, session);
-        String userName = getUserName(authToken);
-        String message = String.format("%s joined the game as an observer", userName);
-        Notification notification = new Notification(message);
-        connections.broadcast(userName, notification);
-        connections.replyToRoot(authToken, new LoadGame());
+    private void joinObserver(JoinObserver joinObserver, Session session) throws IOException {
+
+        try {
+            connections.add(joinObserver.getAuthString(), session);
+            gameService.joinGame(null,joinObserver.gameID, joinObserver.getAuthString());
+            String userName = getUserName(joinObserver.getAuthString());
+            String message = String.format("%s joined the game as an observer", userName);
+            Notification notification = new Notification(message);
+            connections.broadcast(joinObserver.getAuthString(), notification);
+            connections.replyToRoot(joinObserver.getAuthString(), new LoadGame());
+            teamColor = null;
+        } catch (DataAccessException e) {
+            connections.replyToRoot(joinObserver.getAuthString(), new Error(e.getMessage()));
+
+        }
 
     }
 
     private void joinPlayer(JoinPlayer joinPlayerObject, Session session) throws IOException {
         try {
             connections.add(joinPlayerObject.getAuthString(), session);
-            String userName = getUserName(joinPlayerObject.getAuthString());
+            GameData tempData = gameService.getGameData(joinPlayerObject.gameID);
+            teamColorEmpty(tempData, joinPlayerObject.playerColor);
             gameService.joinGame(joinPlayerObject.playerColor.toString(),joinPlayerObject.gameID, joinPlayerObject.getAuthString());
             String playerColor = String.valueOf(joinPlayerObject.playerColor).toLowerCase();
+            String userName = getUserName(joinPlayerObject.getAuthString());
             String message = String.format("%s joined the game as %s", userName, playerColor);
             Notification notification = new Notification(message);
+            teamColor = joinPlayerObject.playerColor;
             connections.broadcast(joinPlayerObject.getAuthString(), notification);
             connections.replyToRoot(joinPlayerObject.getAuthString(), new LoadGame());
+
         } catch (DataAccessException e) {
             connections.replyToRoot(joinPlayerObject.getAuthString(), new Error(e.getMessage()));
         }
@@ -103,4 +116,17 @@ public class WebSocketHandler {
     private String getUserName(String authToken){
          return userService.getAuthList().get(authToken).username();
     }
+
+    private void teamColorEmpty(GameData gameData, ChessGame.TeamColor teamColor) throws DataAccessException{
+        switch (teamColor){
+            case WHITE -> {
+                if (gameData.getWhiteUsername() == null){throw new DataAccessException("Somehow not logged in yet");}
+            }
+            case BLACK -> {
+                if (gameData.getBlackUsername() == null){throw new DataAccessException("Somehow not logged in yet");}
+            }
+        }
+    }
+
+
 }

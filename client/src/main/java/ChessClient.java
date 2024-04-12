@@ -180,6 +180,11 @@ public class ChessClient {
             if(teamColor == null){
                 teamColor = "observer";
             }
+
+            ErrorData errorMessage = server.joinGame(games.get(gameNum).getGameID(),teamColor, authToken);
+            if(errorMessage.message()!= null){
+
+            }
             ws.joinGame(games.get(gameNum).getGameID(), teamColor, authToken);
 
         } catch (NumberFormatException e) {
@@ -204,6 +209,8 @@ public class ChessClient {
                 return "Game number out of range";
             }
             String errorMessage = server.joinGame(games.get(gameNum).getGameID(), null, authToken).message();
+            ws.joinObserver(games.get(gameNum).getGameID(), authToken);
+
             if (errorMessage != null){
                 return errorMessage;
             }
