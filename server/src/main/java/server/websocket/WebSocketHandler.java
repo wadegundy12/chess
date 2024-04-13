@@ -26,7 +26,7 @@ public class WebSocketHandler {
     private GameService gameService = new GameService();
     private UserService userService = new UserService();
     private final ConnectionManager connections = new ConnectionManager();
-    private ChessGame.TeamColor teamColor = null;
+    private ChessGame.TeamColor teamColor;
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
@@ -59,11 +59,21 @@ public class WebSocketHandler {
     }
 
     private void resign(Resign userGameCommand) throws IOException {
-        connections.remove(userGameCommand.getAuthString());
         String userName = getUserName(userGameCommand.getAuthString());
-        String message = String.format("%s resigned the game, you win!", userName);
+        String message = String.format("%s resigned the game", userName);
         Notification notification = new Notification(message);
-        connections.broadcast(userGameCommand.getAuthString(), notification);
+        if(teamColor == null){
+            connections.replyToRoot(userGameCommand.getAuthString(), new Error("Error: Cannot resign as observer"));
+        }
+        else {
+            try {
+                gameService.getGameData(userGameCommand.gameID).getGame().gameOver();
+                //connections.broadcast(userGameCommand.getAuthString(), new LoadGame());
+            } catch (DataAccessException e) {
+                connections.replyToRoot(userGameCommand.getAuthString(), new Error("Error: Invalid game"));
+            }
+            connections.broadcast("", notification);
+        }
     }
 
     private void leave(Leave userGameCommand) throws IOException {

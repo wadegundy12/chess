@@ -32,6 +32,10 @@ public class ChessGame implements Cloneable{
     public boolean isGameOver() {
         return gameOver;
     }
+
+    public void gameOver() {
+        gameOver = true;
+    }
     /**
      * @return Which team's turn it is
      */
