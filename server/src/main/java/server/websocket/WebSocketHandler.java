@@ -6,6 +6,7 @@ import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dataAccess.DataAccessException;
+import dataAccess.GameDAO;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -76,13 +77,18 @@ public class WebSocketHandler {
             if (!whiteTeam && !blackTeam){
                 throw new DataAccessException("Error: Cannot resign as observer");
             }
+            GameData gameData = gameService.getGameData(userGameCommand.gameID);
+            if(gameData.isGameOver()){
+                throw new DataAccessException("Error: Game already over");
+            }
 
             gameService.endGame(userGameCommand.gameID);
+            connections.broadcast("", notification);
+
 
         } catch (DataAccessException e) {
             connections.replyToRoot(userGameCommand.getAuthString(), new Error("Error: Invalid game"));
         }
-        connections.broadcast("", notification);
 
     }
 
