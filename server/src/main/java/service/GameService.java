@@ -23,6 +23,13 @@ public class GameService {
 
     private GameDAO gData = new SQLGameDAO();
 
+
+    public void endGame(int gameID) throws DataAccessException {
+        GameData tempData = gData.getGame(gameID);
+        tempData.setGameOver(true);
+        gData.updateGame(gameID, tempData);
+    }
+
     public Collection<GameData> listGames(String authToken) throws DataAccessException {
         if(!aData.getAuthList().containsKey(authToken)){
             throw new DataAccessException("Error: unauthorized");
@@ -70,29 +77,23 @@ public class GameService {
 
     }
 
-    public void makeMove(ChessMove chessMove, int gameID, String authToken, ChessGame.TeamColor playerColor) throws DataAccessException, InvalidMoveException {
+    public void makeMove(ChessMove chessMove, int gameID, String authToken) throws DataAccessException, InvalidMoveException {
         if(!aData.getAuthList().containsKey(authToken)){
             throw new DataAccessException("Error: unauthorized");
-        }
-
-        if(playerColor == null){
-            throw new InvalidMoveException("Cannot move as observer");
         }
 
         GameData tempData = gData.getGame(gameID);
         ChessGame tempGame = tempData.getGame();
         Collection<ChessMove> validMoves = tempGame.validMoves(chessMove.getStartPosition());
 
-        if(tempGame.isGameOver()){
+        if(tempData.isGameOver()){
             throw new InvalidMoveException("The game is over you silly goose");
         }
 
         if (!validMoves.contains(chessMove) || tempGame.getBoard().getPiece(chessMove.getStartPosition()).getTeamColor() != tempGame.getTeamTurn()){
             throw new InvalidMoveException("Invalid Move");
         }
-        if(playerColor != tempGame.getBoard().getPiece(chessMove.getStartPosition()).getTeamColor()){
-            throw new InvalidMoveException("Invalid Move");
-        }
+
         tempGame.makeMove(chessMove);
         tempData.setGame(tempGame);
         gData.updateGame(gameID, tempData);

@@ -26,7 +26,6 @@ public class WebSocketHandler {
     private GameService gameService = new GameService();
     private UserService userService = new UserService();
     private final ConnectionManager connections = new ConnectionManager();
-    private ChessGame.TeamColor teamColor;
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
@@ -43,9 +42,16 @@ public class WebSocketHandler {
 
     private void makeMove(MakeMove userGameCommand) throws IOException {
         try {
-            gameService.makeMove(userGameCommand.move, userGameCommand.gameID, userGameCommand.getAuthString(), teamColor);
-            ChessMove move = userGameCommand.move;
+            GameData tempGameData = gameService.getGameData(userGameCommand.gameID);
             String userName = getUserName(userGameCommand.getAuthString());
+            boolean whiteTeam = userName.equals(tempGameData.getWhiteUsername());
+            boolean blackTeam = userName.equals(tempGameData.getBlackUsername());
+            ChessMove move = userGameCommand.move;
+            ChessGame.TeamColor pieceColor = tempGameData.getGame().getBoard().getPiece(move.getStartPosition()).getTeamColor();
+            if(!((whiteTeam && pieceColor.equals(ChessGame.TeamColor.WHITE)) || blackTeam && pieceColor.equals(ChessGame.TeamColor.BLACK))){
+                throw new InvalidMoveException("Error: invalid move");
+            }
+            gameService.makeMove(userGameCommand.move, userGameCommand.gameID, userGameCommand.getAuthString());
             String message = String.format("%s moved from %s to %s", userName, move.getStartPosition(), move.getEndPosition());
             Notification notification = new Notification(message);
             connections.broadcast("", new LoadGame());
@@ -62,18 +68,22 @@ public class WebSocketHandler {
         String userName = getUserName(userGameCommand.getAuthString());
         String message = String.format("%s resigned the game", userName);
         Notification notification = new Notification(message);
-        if(teamColor == null){
-            connections.replyToRoot(userGameCommand.getAuthString(), new Error("Error: Cannot resign as observer"));
-        }
-        else {
-            try {
-                gameService.getGameData(userGameCommand.gameID).getGame().gameOver();
-                //connections.broadcast(userGameCommand.getAuthString(), new LoadGame());
-            } catch (DataAccessException e) {
-                connections.replyToRoot(userGameCommand.getAuthString(), new Error("Error: Invalid game"));
+
+
+        try {
+            boolean whiteTeam = userName.equals(gameService.getGameData(userGameCommand.gameID).getWhiteUsername());
+            boolean blackTeam = userName.equals(gameService.getGameData(userGameCommand.gameID).getWhiteUsername());
+            if (!(whiteTeam || blackTeam)){
+                throw new DataAccessException("Error: Cannot resign as observer");
             }
-            connections.broadcast("", notification);
+            else{
+                gameService.endGame(userGameCommand.gameID);
+            }
+        } catch (DataAccessException e) {
+            connections.replyToRoot(userGameCommand.getAuthString(), new Error("Error: Invalid game"));
         }
+        connections.broadcast("", notification);
+
     }
 
     private void leave(Leave userGameCommand) throws IOException {
@@ -94,7 +104,6 @@ public class WebSocketHandler {
             Notification notification = new Notification(message);
             connections.broadcast(joinObserver.getAuthString(), notification);
             connections.replyToRoot(joinObserver.getAuthString(), new LoadGame());
-            teamColor = null;
         } catch (DataAccessException e) {
             connections.replyToRoot(joinObserver.getAuthString(), new Error(e.getMessage()));
 
@@ -112,7 +121,6 @@ public class WebSocketHandler {
             String userName = getUserName(joinPlayerObject.getAuthString());
             String message = String.format("%s joined the game as %s", userName, playerColor);
             Notification notification = new Notification(message);
-            teamColor = joinPlayerObject.playerColor;
             connections.broadcast(joinPlayerObject.getAuthString(), notification);
             connections.replyToRoot(joinPlayerObject.getAuthString(), new LoadGame());
 

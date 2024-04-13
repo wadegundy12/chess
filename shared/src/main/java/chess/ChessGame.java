@@ -15,7 +15,6 @@ public class ChessGame implements Cloneable{
     private TeamColor turn;
     private ChessBoard board;
 
-    private boolean gameOver;
 
 
 
@@ -23,19 +22,11 @@ public class ChessGame implements Cloneable{
     public ChessGame() {
         turn =TeamColor.WHITE;
         board = new ChessBoard();
-        gameOver = false;
         board.resetBoard();
 
     }
 
 
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    public void gameOver() {
-        gameOver = true;
-    }
     /**
      * @return Which team's turn it is
      */
@@ -172,11 +163,7 @@ public class ChessGame implements Cloneable{
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (!isInCheck(teamColor)){return false;}
-        if(isInStalemate(teamColor)) {
-            gameOver = true;
-            return true;
-        }
-        return false;
+        return isInStalemate(teamColor);
 
     }
 
@@ -198,11 +185,7 @@ public class ChessGame implements Cloneable{
                 }
             }
         }
-        if(moves.isEmpty()){
-            gameOver = true;
-            return true;
-        }
-        return false;
+        return moves.isEmpty();
     }
 
 

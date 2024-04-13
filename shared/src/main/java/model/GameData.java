@@ -13,9 +13,16 @@ public class GameData {
     private String gameName;
     private ChessGame game;
     private String errorMessage;
+    private boolean gameOver;
 
 
+    public boolean isGameOver() {
+        return gameOver;
+    }
 
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
 
     public GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game, String errorMessage){
 
@@ -25,6 +32,7 @@ public class GameData {
         this.gameName = gameName;
         this.game = game;
         this.errorMessage = errorMessage;
+        this.gameOver = false;
     }
 
     public int getGameID() {
