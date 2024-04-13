@@ -35,6 +35,7 @@ public class ChessClient {
         currentGameData = null;
         joinedBlack = false;
         this.notificationHandler = notificationHandler;
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
 
 
     }
@@ -193,8 +194,9 @@ public class ChessClient {
 
         joinedBlack = (teamColor.equals("Black"));
         String output = "Joined game as " + teamColor + "\n" + teamColor + "'s View:\n\u001B[0m";
-        output += drawBoard((teamColor.equals("Black")));
-        output += drawBoard((!teamColor.equals("Black")));
+        //output += drawBoard((teamColor.equals("Black")));
+        //output += drawBoard((!teamColor.equals("Black")));
+        currentGameData = games.get(gameNum);
         return output;
     }
 
@@ -221,8 +223,8 @@ public class ChessClient {
         String output = "Joined game as observer";
         joinedBlack = false;
         currentGameData = games.get(gameNum);
-        output += drawBoard(false);
-        output += drawBoard(true);
+        //output += drawBoard(false);
+        //output += drawBoard(true);
         return output;
     }
 

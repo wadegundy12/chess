@@ -19,9 +19,9 @@ public class Repl implements NotificationHandler {
         Scanner scanner = new Scanner(System.in);
         String result = "";
         while (!result.equals("Goodbye")) {
+            System.out.println();
             printPrompt();
             String line = scanner.nextLine();
-
             result = client.eval(line);
             System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
         }
@@ -38,8 +38,8 @@ public class Repl implements NotificationHandler {
     public void notify(ServerMessage serverMessage) {
         switch (serverMessage.getServerMessageType()){
             case LOAD_GAME -> {
-                System.out.println(client.drawBoard(client.joinedBlack));
-                printPrompt();
+                System.out.println(client.drawBoard(client.joinedBlack) + "\n");
+                //printPrompt();
             }
             case ERROR -> {
                 webSocketMessages.serverMessages.Error error = (webSocketMessages.serverMessages.Error) serverMessage;

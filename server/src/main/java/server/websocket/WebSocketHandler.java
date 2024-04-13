@@ -72,13 +72,13 @@ public class WebSocketHandler {
 
         try {
             boolean whiteTeam = userName.equals(gameService.getGameData(userGameCommand.gameID).getWhiteUsername());
-            boolean blackTeam = userName.equals(gameService.getGameData(userGameCommand.gameID).getWhiteUsername());
-            if (!(whiteTeam || blackTeam)){
+            boolean blackTeam = userName.equals(gameService.getGameData(userGameCommand.gameID).getBlackUsername());
+            if (!whiteTeam && !blackTeam){
                 throw new DataAccessException("Error: Cannot resign as observer");
             }
-            else{
-                gameService.endGame(userGameCommand.gameID);
-            }
+
+            gameService.endGame(userGameCommand.gameID);
+
         } catch (DataAccessException e) {
             connections.replyToRoot(userGameCommand.getAuthString(), new Error("Error: Invalid game"));
         }
