@@ -55,8 +55,8 @@ public class WebSocketHandler {
             gameService.makeMove(userGameCommand.move, userGameCommand.gameID, userGameCommand.getAuthString());
             String message = String.format("%s moved from %s to %s", userName, move.getStartPosition(), move.getEndPosition());
             Notification notification = new Notification(message);
-            connections.broadcast("", new LoadGame());
-            connections.broadcast(userGameCommand.getAuthString(), notification);
+            connections.broadcast("", tempGameData.getGameID(), new LoadGame());
+            connections.broadcast(userGameCommand.getAuthString(), tempGameData.getGameID(), notification);
         } catch (InvalidMoveException e) {
             connections.replyToRoot(userGameCommand.getAuthString(), new Error("Error: Invalid Move"));
         } catch (DataAccessException e) {
@@ -83,7 +83,7 @@ public class WebSocketHandler {
             }
 
             gameService.endGame(userGameCommand.gameID);
-            connections.broadcast("", notification);
+            connections.broadcast("", gameData.getGameID(), notification);
 
 
         } catch (DataAccessException e) {
@@ -97,18 +97,18 @@ public class WebSocketHandler {
         String userName = getUserName(userGameCommand.getAuthString());
         String message = String.format("%s left the game", userName);
         Notification notification = new Notification(message);
-        connections.broadcast(userGameCommand.getAuthString(), notification);
+        connections.broadcast(userGameCommand.getAuthString(), userGameCommand.gameID, notification);
     }
 
     private void joinObserver(JoinObserver joinObserver, Session session) throws IOException {
 
         try {
-            connections.add(joinObserver.getAuthString(), session);
+            connections.add(joinObserver.getAuthString(), joinObserver.gameID, session);
             gameService.joinGame(null,joinObserver.gameID, joinObserver.getAuthString());
             String userName = getUserName(joinObserver.getAuthString());
             String message = String.format("%s joined the game as an observer", userName);
             Notification notification = new Notification(message);
-            connections.broadcast(joinObserver.getAuthString(), notification);
+            connections.broadcast(joinObserver.getAuthString(), joinObserver.gameID, notification);
             connections.replyToRoot(joinObserver.getAuthString(), new LoadGame());
         } catch (DataAccessException e) {
             connections.replyToRoot(joinObserver.getAuthString(), new Error(e.getMessage()));
@@ -119,7 +119,7 @@ public class WebSocketHandler {
 
     private void joinPlayer(JoinPlayer joinPlayerObject, Session session) throws IOException {
         try {
-            connections.add(joinPlayerObject.getAuthString(), session);
+            connections.add(joinPlayerObject.getAuthString(), joinPlayerObject.gameID, session);
             GameData tempData = gameService.getGameData(joinPlayerObject.gameID);
             teamColorEmpty(tempData, joinPlayerObject.playerColor);
             gameService.joinGame(joinPlayerObject.playerColor.toString(),joinPlayerObject.gameID, joinPlayerObject.getAuthString());
@@ -127,7 +127,7 @@ public class WebSocketHandler {
             String userName = getUserName(joinPlayerObject.getAuthString());
             String message = String.format("%s joined the game as %s", userName, playerColor);
             Notification notification = new Notification(message);
-            connections.broadcast(joinPlayerObject.getAuthString(), notification);
+            connections.broadcast(joinPlayerObject.getAuthString(), joinPlayerObject.gameID, notification);
             connections.replyToRoot(joinPlayerObject.getAuthString(), new LoadGame());
 
         } catch (DataAccessException e) {
