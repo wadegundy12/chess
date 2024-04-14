@@ -1,6 +1,8 @@
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -14,22 +16,24 @@ import websocket.WebSocketFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class ChessClient {
 
     private boolean loggedIn;
+    private boolean inGame;
     private String authToken;
     String serverUrl = "http://localhost:8080";
     private ServerFacade server = new ServerFacade(serverUrl);
     private NotificationHandler notificationHandler;
     private WebSocketFacade ws;
     private GameData currentGameData;
-
     private ArrayList<GameData> games;
     public boolean joinedBlack;
 
     public ChessClient(NotificationHandler notificationHandler) {
         loggedIn = false;
+        inGame = false;
         authToken = "0";
         games = new ArrayList<>();
         currentGameData = null;
@@ -54,17 +58,63 @@ public class ChessClient {
                 default -> "Invalid Input" + loggedOutHelp();
             };
         }
-        return switch (cmd){
-            case "help" -> loggedInHelp();
-            case "logout" -> logout();
-            case "create" -> createGame(params);
-            case "list" -> listGames();
-            case "join" -> joinGame(params);
-            case "observe" -> observeGame(params);
-            case "quit" -> "Goodbye";
 
-            default -> "Invalid Input" + loggedInHelp();
-        };
+        else if (!inGame) {
+            return switch (cmd){
+                case "help" -> loggedInHelp();
+                case "logout" -> logout();
+                case "create" -> createGame(params);
+                case "list" -> listGames();
+                case "join" -> joinGame(params);
+                case "observe" -> observeGame(params);
+                case "quit" -> "Goodbye";
+                default -> "Invalid Input" + loggedInHelp();
+            };
+        }
+        else{
+            return switch (cmd){
+                case "help" -> inGameHelp();
+                case "redraw" -> drawBoard(joinedBlack);
+                case "leave" -> leaveGame();
+                case "make" -> makeMove(params);
+                default -> "Invalid Input" + inGameHelp();
+            };
+        }
+    }
+
+    private String makeMove(String[] params) {
+        if (!Objects.equals(params[0], "move")){
+            return "Invalid Input" + inGameHelp();
+        }
+        try {
+            ChessPosition startPosition = positionConvert(params[1]);
+            ChessPosition endPosition = positionConvert(params[2]);
+            ws.makeMove(currentGameData.getGameID(), authToken);
+        } catch (DataAccessException e) {
+            return "Invalid position";
+        }
+
+    }
+
+    private String leaveGame() {
+        ws.leave(currentGameData.getGameID(), authToken);
+        inGame = false;
+        currentGameData = null;
+        joinedBlack = false;
+        return "Left the game";
+    }
+
+
+    private String inGameHelp() {
+        return """
+                \tcreate <NAME> - a game
+                \tlist - games
+                \tjoin <ID> [WHITE|BLACK|<empty>] - a game
+                \tobserve <ID> - a game
+                \tlogout - when you are done
+                \tquit - playing chess
+                \thelp - with possible commands
+                """;
     }
 
     private String loggedInHelp(){
@@ -273,6 +323,19 @@ public class ChessClient {
         output.append(background).append("   ").append(resetStyle).append("\n");
         output.append("\n");
         return output.toString();
+    }
+
+    private ChessPosition positionConvert(String position) throws DataAccessException {
+        if (position.length() != 2){
+            throw new DataAccessException("Not a valid input");
+        }
+        char columnChar = position.charAt(0);
+        int column = columnChar - 'a' + 1;
+
+        char rowChar = position.charAt(1);
+        int row = Character.getNumericValue(rowChar);
+
+        return new ChessPosition(row,column);
     }
 
 }

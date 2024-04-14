@@ -15,11 +15,10 @@ public class Repl implements NotificationHandler {
 
     public void run() {
         System.out.println(client.eval("help"));
-
         Scanner scanner = new Scanner(System.in);
         String result = "";
         while (!result.equals("Goodbye")) {
-            System.out.println();
+            System.out.flush();
             printPrompt();
             String line = scanner.nextLine();
             result = client.eval(line);
@@ -39,17 +38,17 @@ public class Repl implements NotificationHandler {
         switch (serverMessage.getServerMessageType()){
             case LOAD_GAME -> {
                 System.out.println(client.drawBoard(client.joinedBlack) + "\n");
-                //printPrompt();
+                System.out.flush();
             }
             case ERROR -> {
                 webSocketMessages.serverMessages.Error error = (webSocketMessages.serverMessages.Error) serverMessage;
                 System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + error.errorMessage);
-                printPrompt();
+                System.out.flush();
             }
             case NOTIFICATION -> {
                 Notification notification = (Notification) serverMessage;
                 System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + notification.message);
-                printPrompt();
+                System.out.flush();
             }
         }
     }

@@ -7,6 +7,7 @@ import java.io.IOException;
 public class Connection {
     public String authToken;
     public Session session;
+
     public int gameID;
 
     public Connection(String authToken, int gameID, Session session) {
