@@ -1,9 +1,11 @@
 package webSocketMessages.serverMessages;
 
+import model.GameData;
+
 public class LoadGame extends ServerMessage{
-    public boolean game;
-    public LoadGame() {
+    public GameData game;
+    public LoadGame(GameData game) {
         super(ServerMessageType.LOAD_GAME);
-        game = true;
+        this.game = game;
     }
 }

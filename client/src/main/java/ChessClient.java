@@ -83,8 +83,8 @@ public class ChessClient {
         }
     }
 
-    public void updateGame(){
-        currentGameData.setGame()
+    public void updateGame(GameData newData){
+        currentGameData.setGame(newData.getGame());
     }
 
     private String makeMove(String[] params) {

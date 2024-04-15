@@ -55,7 +55,7 @@ public class WebSocketHandler {
             gameService.makeMove(userGameCommand.move, userGameCommand.gameID, userGameCommand.getAuthString());
             String message = String.format("%s moved from %s to %s", userName, move.getStartPosition(), move.getEndPosition());
             Notification notification = new Notification(message);
-            connections.broadcast("", tempGameData.getGameID(), new LoadGame());
+            connections.broadcast("", tempGameData.getGameID(), new LoadGame(tempGameData));
             connections.broadcast(userGameCommand.getAuthString(), tempGameData.getGameID(), notification);
         } catch (InvalidMoveException e) {
             connections.replyToRoot(userGameCommand.getAuthString(), new Error("Error: Invalid Move"));
@@ -109,7 +109,7 @@ public class WebSocketHandler {
             String message = String.format("%s joined the game as an observer", userName);
             Notification notification = new Notification(message);
             connections.broadcast(joinObserver.getAuthString(), joinObserver.gameID, notification);
-            connections.replyToRoot(joinObserver.getAuthString(), new LoadGame());
+            connections.replyToRoot(joinObserver.getAuthString(), new LoadGame(gameService.getGameData(joinObserver.gameID)));
         } catch (DataAccessException e) {
             connections.replyToRoot(joinObserver.getAuthString(), new Error(e.getMessage()));
 
@@ -128,7 +128,8 @@ public class WebSocketHandler {
             String message = String.format("%s joined the game as %s", userName, playerColor);
             Notification notification = new Notification(message);
             connections.broadcast(joinPlayerObject.getAuthString(), joinPlayerObject.gameID, notification);
-            connections.replyToRoot(joinPlayerObject.getAuthString(), new LoadGame());
+            LoadGame loadGame = new LoadGame(gameService.getGameData(joinPlayerObject.gameID));
+            connections.replyToRoot(joinPlayerObject.getAuthString(), loadGame);
 
         } catch (DataAccessException e) {
             connections.replyToRoot(joinPlayerObject.getAuthString(), new Error(e.getMessage()));
