@@ -17,6 +17,7 @@ import websocket.WebSocketFacade;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class ChessClient {
 
@@ -82,6 +83,10 @@ public class ChessClient {
         }
     }
 
+    public void updateGame(){
+        currentGameData.setGame()
+    }
+
     private String makeMove(String[] params) {
         if (!Objects.equals(params[0], "move")){
             return "Invalid Input" + inGameHelp();
@@ -89,10 +94,47 @@ public class ChessClient {
         try {
             ChessPosition startPosition = positionConvert(params[1]);
             ChessPosition endPosition = positionConvert(params[2]);
-            ws.makeMove(currentGameData.getGameID(), authToken);
+            ChessMove move = new ChessMove(startPosition,endPosition,null);
+            if (currentGameData.getGame().getBoard().getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN)
+                    && (endPosition.getRow() == 1 || endPosition.getRow() == 8)) {
+                System.out.println("Enter Q N B or R to choose promotion piece: ");
+                Scanner scanner = new Scanner(System.in);
+                String line = scanner.nextLine().toUpperCase();
+                System.out.println("\n");
+                boolean goodInput;
+                do {
+                    switch (line){
+                        case "Q" -> {
+                            move = new ChessMove(startPosition, endPosition, ChessPiece.PieceType.QUEEN);
+                            goodInput = true;
+                        }
+                        case "N" -> {
+                            move = new ChessMove(startPosition, endPosition, ChessPiece.PieceType.KNIGHT);
+                            goodInput = true;
+                        }
+                        case "C" -> {
+                            move = new ChessMove(startPosition, endPosition, ChessPiece.PieceType.ROOK);
+                            goodInput = true;
+                        }
+                        case "B" ->{
+                            move = new ChessMove(startPosition,endPosition, ChessPiece.PieceType.BISHOP);
+                            goodInput = true;
+                        }
+                        default -> {
+                            System.out.println("Enter Q N B or R to choose promotion piece: ");
+                            line = scanner.nextLine().toUpperCase();
+                            System.out.println("\n");
+                            goodInput = false;
+                        }
+                    }
+                } while(!goodInput);
+            }
+            ws.makeMove(currentGameData.getGameID(), authToken, move);
         } catch (DataAccessException e) {
             return "Invalid position";
         }
+
+        return "Successful move";
 
     }
 
@@ -237,6 +279,7 @@ public class ChessClient {
 
             }
             ws.joinGame(games.get(gameNum).getGameID(), teamColor, authToken);
+            inGame = true;
 
         } catch (NumberFormatException e) {
             return "Did not input a valid number";
@@ -273,6 +316,7 @@ public class ChessClient {
         String output = "Joined game as observer";
         joinedBlack = false;
         currentGameData = games.get(gameNum);
+        inGame = true;
         //output += drawBoard(false);
         //output += drawBoard(true);
         return output;

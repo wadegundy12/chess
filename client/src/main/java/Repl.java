@@ -38,6 +38,7 @@ public class Repl implements NotificationHandler {
         switch (serverMessage.getServerMessageType()){
             case LOAD_GAME -> {
                 System.out.println(client.drawBoard(client.joinedBlack) + "\n");
+                client.updateGame();
                 System.out.flush();
             }
             case ERROR -> {

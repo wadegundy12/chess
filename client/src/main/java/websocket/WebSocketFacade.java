@@ -85,6 +85,7 @@ public class WebSocketFacade extends Endpoint {
 
     public void makeMove(int gameID, String authToken, ChessMove move){
         try{
+
             MakeMove makeMove = new MakeMove(authToken,move, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(makeMove));
         } catch (IOException e) {
