@@ -149,12 +149,11 @@ public class ChessClient {
 
     private String inGameHelp() {
         return """
-                \tcreate <NAME> - a game
-                \tlist - games
-                \tjoin <ID> [WHITE|BLACK|<empty>] - a game
-                \tobserve <ID> - a game
-                \tlogout - when you are done
-                \tquit - playing chess
+                \tmake move <start position> <end position>
+                \tresign - forfeit the game
+                \tleave - leave the game
+                \thighlight <start position> - show available moves
+                \tredraw - the board
                 \thelp - with possible commands
                 """;
     }

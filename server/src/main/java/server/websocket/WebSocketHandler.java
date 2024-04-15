@@ -53,6 +53,7 @@ public class WebSocketHandler {
                 throw new InvalidMoveException("Error: invalid move");
             }
             gameService.makeMove(userGameCommand.move, userGameCommand.gameID, userGameCommand.getAuthString());
+            tempGameData = gameService.getGameData(userGameCommand.gameID);
             String message = String.format("%s moved from %s to %s", userName, move.getStartPosition(), move.getEndPosition());
             Notification notification = new Notification(message);
             connections.broadcast("", tempGameData.getGameID(), new LoadGame(tempGameData));

@@ -37,10 +37,11 @@ public class Repl implements NotificationHandler {
     public void notify(ServerMessage serverMessage) {
         switch (serverMessage.getServerMessageType()){
             case LOAD_GAME -> {
-                System.out.println(client.drawBoard(client.joinedBlack) + "\n");
                 LoadGame loadGame = (LoadGame) serverMessage;
                 client.updateGame(loadGame.game);
-                System.out.flush();
+                System.out.println(client.drawBoard(client.joinedBlack) + "\n");
+
+
             }
             case ERROR -> {
                 webSocketMessages.serverMessages.Error error = (webSocketMessages.serverMessages.Error) serverMessage;
