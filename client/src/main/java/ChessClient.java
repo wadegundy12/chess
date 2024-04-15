@@ -6,9 +6,8 @@ import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import server.handlers.records.ErrorData;
-import server.handlers.records.GameName;
-import server.handlers.records.GamesListRecord;
+
+import records.*;
 import serverFacade.ServerFacade;
 import ui.EscapeSequences;
 import websocket.NotificationHandler;

@@ -3,10 +3,8 @@ package serverFacade;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import model.AuthData;
-import model.GameData;
 import model.UserData;
-import server.handlers.records.*;
-
+import records.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,9 +12,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 public class ServerFacade {
 
@@ -65,7 +60,7 @@ public class ServerFacade {
         }
     }
 
-    public GamesListRecord listGames(String authToken){
+    public records.GamesListRecord listGames(String authToken){
         String path = "/game";
         GamesListRecord gamesListRecord;
         try {

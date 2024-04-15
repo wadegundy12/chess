@@ -4,10 +4,8 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import server.handlers.records.ErrorData;
-import server.handlers.records.GameIDRecord;
-import server.handlers.records.GameName;
-import server.handlers.records.GamesListRecord;
+import records.*;
+
 import serverFacade.ServerFacade;
 
 
