@@ -2,11 +2,9 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-
 import records.*;
 import serverFacade.ServerFacade;
 import ui.EscapeSequences;
