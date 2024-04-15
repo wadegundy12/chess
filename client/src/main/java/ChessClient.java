@@ -14,10 +14,7 @@ import ui.EscapeSequences;
 import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class ChessClient {
 
@@ -76,6 +73,7 @@ public class ChessClient {
             return switch (cmd){
                 case "help" -> inGameHelp();
                 case "redraw" -> drawBoard(joinedBlack);
+                case "highlight" -> highlightBoard(params[0]);
                 case "leave" -> leaveGame();
                 case "make" -> makeMove(params);
                 default -> "Invalid Input" + inGameHelp();
@@ -333,9 +331,6 @@ public class ChessClient {
     }
 
     public String drawBoard(boolean blackPerspective){
-        if (currentGameData == null){
-            return "Not currently in a game\n";
-        }
         String resetStyle = "\u001B[0m";
         StringBuilder output = new StringBuilder();
         char[] columnLetters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
@@ -375,6 +370,68 @@ public class ChessClient {
             output.append(background).append(" ").append(columnLetters[i - 1]).append(" ");
         }
         output.append(background).append("   ").append(resetStyle).append("\n");
+        output.append("\n");
+        return output.toString();
+    }
+
+    public String highlightBoard(String stringPosition){
+        ChessPosition position;
+        try {
+            position = positionConvert(stringPosition);
+        } catch (DataAccessException e) {
+            return "Error: Invalid Position";
+        }
+        Collection<ChessMove> moves = currentGameData.getGame().validMoves(position);
+        ArrayList<ChessPosition> finalPositions = new ArrayList<>();
+        for (ChessMove tempMove : moves){
+            finalPositions.add(tempMove.getEndPosition());
+        }
+        String resetStyle = "\u001B[0m";
+        StringBuilder output = new StringBuilder();
+        char[] columnLetters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+        String boarderColor = EscapeSequences.SET_BG_COLOR_DARK_GREEN;
+        String highlighted = EscapeSequences.SET_BG_COLOR_YELLOW;
+
+        for(int i = 0; i < 10; i++){
+            output.append(boarderColor).append("   ");
+        }
+        output.append(resetStyle).append("\n");
+
+        for (int row = joinedBlack ? 1:8; joinedBlack ? row <= 8 : row >= 1; row += joinedBlack ? 1 : -1) {
+
+            output.append(boarderColor).append(" ").append(row).append(" ");
+
+            for (int col = joinedBlack ? 8 : 1; joinedBlack ? col >= 1 : col <= 8; col += joinedBlack ? -1 : 1) {
+                ChessPiece piece = currentGameData.getGame().getBoard().getPiece(new ChessPosition(row,col));
+                boolean isWhiteSquare = (row + col) % 2 == 1;
+                String squareBackground;
+                if(finalPositions.contains(new ChessPosition(row, col))){
+                    squareBackground = highlighted;
+                }
+                else {
+                    squareBackground = isWhiteSquare ? EscapeSequences.SET_BG_COLOR_WHITE : EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+                }
+                output.append(squareBackground);
+
+                if (piece == null){
+                    output.append("   ");
+                }
+                else{
+                    String pieceColorCode = piece.getTeamColor().equals(ChessGame.TeamColor.WHITE) ?
+                            EscapeSequences.SET_TEXT_COLOR_BLUE : EscapeSequences.SET_TEXT_COLOR_RED;
+                    output.append(" ").append(pieceColorCode).append(piece.toCharacter()).append(" ");
+                }
+
+                output.append(resetStyle);
+
+            }
+            output.append(boarderColor).append("   ").append(resetStyle).append("\n");
+        }
+        output.append(boarderColor).append("   ");
+        for (int i = joinedBlack ? 8 : 1; joinedBlack ? i >= 1 : i <= 8; i += joinedBlack ? -1 : 1) {
+            output.append(boarderColor).append(" ").append(columnLetters[i - 1]).append(" ");
+        }
+        output.append(boarderColor).append("   ").append(resetStyle).append("\n");
         output.append("\n");
         return output.toString();
     }
