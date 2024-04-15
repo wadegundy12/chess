@@ -44,12 +44,12 @@ public class Repl implements NotificationHandler {
             }
             case ERROR -> {
                 Error error = new Gson().fromJson(message, Error.class);
-                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + error.errorMessage);
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + error.errorMessage + "\n");
                 System.out.flush();
             }
             case NOTIFICATION -> {
                 Notification notification = new Gson().fromJson(message, Notification.class);
-                System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + notification.message);
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + notification.message + "\n");
                 System.out.flush();
             }
         }

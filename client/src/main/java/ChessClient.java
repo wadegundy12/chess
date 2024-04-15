@@ -108,7 +108,7 @@ public class ChessClient {
             return "Invalid position";
         }
 
-        return "Successful move";
+        return "";
 
     }
 
@@ -348,11 +348,11 @@ public class ChessClient {
 
         for (int row = blackPerspective ? 1:8; blackPerspective ? row <= 8 : row >= 1; row += blackPerspective ? 1 : -1) {
 
-            output.append(background).append(" ").append(9 - row).append(" ");
+            output.append(background).append(" ").append(row).append(" ");
 
             for (int col = blackPerspective ? 8 : 1; blackPerspective ? col >= 1 : col <= 8; col += blackPerspective ? -1 : 1) {
                 ChessPiece piece = currentGameData.getGame().getBoard().getPiece(new ChessPosition(row,col));
-                boolean isWhiteSquare = (row + col) % 2 == 0;
+                boolean isWhiteSquare = (row + col) % 2 == 1;
                 String squareBackground = isWhiteSquare ? EscapeSequences.SET_BG_COLOR_WHITE : EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
                 output.append(squareBackground);
 
