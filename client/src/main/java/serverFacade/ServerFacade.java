@@ -1,7 +1,6 @@
 package serverFacade;
 
 import com.google.gson.Gson;
-import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import records.*;
