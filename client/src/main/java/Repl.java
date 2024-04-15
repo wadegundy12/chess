@@ -1,8 +1,9 @@
-import java.lang.Error;
 import java.util.Scanner;
 
+import com.google.gson.Gson;
 import ui.EscapeSequences;
 import webSocketMessages.serverMessages.*;
+import webSocketMessages.serverMessages.Error;
 import websocket.NotificationHandler;
 
 public class Repl implements NotificationHandler {
@@ -34,22 +35,20 @@ public class Repl implements NotificationHandler {
     }
 
     @Override
-    public void notify(ServerMessage serverMessage) {
+    public void notify(ServerMessage serverMessage, String message) {
         switch (serverMessage.getServerMessageType()){
             case LOAD_GAME -> {
-                LoadGame loadGame = (LoadGame) serverMessage;
+                LoadGame loadGame = new Gson().fromJson(message, LoadGame.class);
                 client.updateGame(loadGame.game);
-                System.out.println(client.drawBoard(client.joinedBlack) + "\n");
-
-
+                System.out.println("\n" + client.drawBoard(client.joinedBlack) + "\n");
             }
             case ERROR -> {
-                webSocketMessages.serverMessages.Error error = (webSocketMessages.serverMessages.Error) serverMessage;
+                Error error = new Gson().fromJson(message, Error.class);
                 System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + error.errorMessage);
                 System.out.flush();
             }
             case NOTIFICATION -> {
-                Notification notification = (Notification) serverMessage;
+                Notification notification = new Gson().fromJson(message, Notification.class);
                 System.out.println(EscapeSequences.SET_TEXT_COLOR_BLUE + notification.message);
                 System.out.flush();
             }

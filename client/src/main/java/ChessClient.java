@@ -95,40 +95,14 @@ public class ChessClient {
             ChessPosition startPosition = positionConvert(params[1]);
             ChessPosition endPosition = positionConvert(params[2]);
             ChessMove move = new ChessMove(startPosition,endPosition,null);
-            if (currentGameData.getGame().getBoard().getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN)
+            ChessGame tempGame = currentGameData.getGame();
+
+            //if pawn and in position to possibly promote - promote
+            if (tempGame.getBoard().getPiece(startPosition).getPieceType().equals(ChessPiece.PieceType.PAWN)
                     && (endPosition.getRow() == 1 || endPosition.getRow() == 8)) {
-                System.out.println("Enter Q N B or R to choose promotion piece: ");
-                Scanner scanner = new Scanner(System.in);
-                String line = scanner.nextLine().toUpperCase();
-                System.out.println("\n");
-                boolean goodInput;
-                do {
-                    switch (line){
-                        case "Q" -> {
-                            move = new ChessMove(startPosition, endPosition, ChessPiece.PieceType.QUEEN);
-                            goodInput = true;
-                        }
-                        case "N" -> {
-                            move = new ChessMove(startPosition, endPosition, ChessPiece.PieceType.KNIGHT);
-                            goodInput = true;
-                        }
-                        case "C" -> {
-                            move = new ChessMove(startPosition, endPosition, ChessPiece.PieceType.ROOK);
-                            goodInput = true;
-                        }
-                        case "B" ->{
-                            move = new ChessMove(startPosition,endPosition, ChessPiece.PieceType.BISHOP);
-                            goodInput = true;
-                        }
-                        default -> {
-                            System.out.println("Enter Q N B or R to choose promotion piece: ");
-                            line = scanner.nextLine().toUpperCase();
-                            System.out.println("\n");
-                            goodInput = false;
-                        }
-                    }
-                } while(!goodInput);
+                move = pawnPromote(startPosition,endPosition);
             }
+
             ws.makeMove(currentGameData.getGameID(), authToken, move);
         } catch (DataAccessException e) {
             return "Invalid position";
@@ -136,6 +110,43 @@ public class ChessClient {
 
         return "Successful move";
 
+    }
+
+    private ChessMove pawnPromote(ChessPosition startPosition, ChessPosition endPosition){
+        System.out.println("Enter Q N B or R to choose promotion piece: ");
+        Scanner scanner = new Scanner(System.in);
+        String line = scanner.nextLine().toUpperCase();
+        System.out.println("\n");
+        boolean goodInput;
+        ChessMove move = new ChessMove(startPosition,endPosition,null);
+        do {
+            switch (line){
+                case "Q" -> {
+                    move = new ChessMove(startPosition, endPosition, ChessPiece.PieceType.QUEEN);
+                    goodInput = true;
+                }
+                case "N" -> {
+                    move = new ChessMove(startPosition, endPosition, ChessPiece.PieceType.KNIGHT);
+                    goodInput = true;
+                }
+                case "C" -> {
+                    move = new ChessMove(startPosition, endPosition, ChessPiece.PieceType.ROOK);
+                    goodInput = true;
+                }
+                case "B" ->{
+                    move = new ChessMove(startPosition,endPosition, ChessPiece.PieceType.BISHOP);
+                    goodInput = true;
+                }
+                default -> {
+                    System.out.println("Enter Q N B or R to choose promotion piece: ");
+                    line = scanner.nextLine().toUpperCase();
+                    System.out.println("\n");
+                    goodInput = false;
+                }
+            }
+        } while(!goodInput);
+
+        return move;
     }
 
     private String leaveGame() {
@@ -335,7 +346,7 @@ public class ChessClient {
         }
         output.append(resetStyle).append("\n");
 
-        for (int row = blackPerspective ? 8 : 1; blackPerspective ? row >= 1 : row <= 8; row += blackPerspective ? -1 : 1) {
+        for (int row = blackPerspective ? 1:8; blackPerspective ? row <= 8 : row >= 1; row += blackPerspective ? 1 : -1) {
 
             output.append(background).append(" ").append(9 - row).append(" ");
 
